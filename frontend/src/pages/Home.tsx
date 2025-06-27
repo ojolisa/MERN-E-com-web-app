@@ -18,31 +18,12 @@ import { useNavigate } from 'react-router-dom';
 import { Product } from '../types';
 import { productsAPI } from '../services/api';
 import { useCart } from '../contexts/CartContext';
+import { useFeaturedProducts } from '../hooks/useFeaturedProducts';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        const response = await productsAPI.getFeaturedProducts();
-        setFeaturedProducts(response.data);
-      } catch (err: any) {
-        const errorMessage = err.response?.data?.message || err.message || 'Failed to load featured products';
-        setError(errorMessage);
-        console.error('Error fetching featured products:', err);
-        console.error('Error response:', err.response?.data);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeaturedProducts();
-  }, []);
+  const { products: featuredProducts, loading, error } = useFeaturedProducts();
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Product, User, Order } from '../types';
+import { featuredProductsCache } from '../utils/cache';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -113,17 +114,30 @@ export const productsAPI = {
   
   getCategories: () => api.get('/api/products/categories'),
   
-  addReview: (productId: string, rating: number, comment: string) =>
-    api.post(`/api/products/${productId}/reviews`, { rating, comment }),
+  addReview: async (productId: string, rating: number, comment: string) => {
+    const response = await api.post(`/api/products/${productId}/reviews`, { rating, comment });
+    featuredProductsCache.clear(); // Clear cache when review is added (might affect ratings)
+    return response;
+  },
   
   // Admin only
-  createProduct: (productData: Partial<Product>) =>
-    api.post('/api/products', productData),
+  createProduct: async (productData: Partial<Product>) => {
+    const response = await api.post('/api/products', productData);
+    featuredProductsCache.clear(); // Clear cache when new product is created
+    return response;
+  },
   
-  updateProduct: (id: string, productData: Partial<Product>) =>
-    api.put(`/api/products/${id}`, productData),
+  updateProduct: async (id: string, productData: Partial<Product>) => {
+    const response = await api.put(`/api/products/${id}`, productData);
+    featuredProductsCache.clear(); // Clear cache when product is updated
+    return response;
+  },
   
-  deleteProduct: (id: string) => api.delete(`/api/products/${id}`),
+  deleteProduct: async (id: string) => {
+    const response = await api.delete(`/api/products/${id}`);
+    featuredProductsCache.clear(); // Clear cache when product is deleted
+    return response;
+  },
 
   // Admin category management
   getCategoryStats: () => api.get('/api/products/admin/categories'),

@@ -75,6 +75,13 @@ router.get('/', async (req, res) => {
 // Get featured products
 router.get('/featured', async (req, res) => {
   try {
+    // Set cache headers for better caching control
+    res.set({
+      'Cache-Control': 'public, max-age=300, s-maxage=600', // 5 min browser, 10 min proxy
+      'ETag': `"featured-${Date.now()}"`, // Simple ETag based on timestamp
+      'Last-Modified': new Date().toUTCString()
+    });
+
     // Try to get from database first
     const products = await Product.find({ 
       isActive: true,
@@ -86,12 +93,23 @@ router.get('/featured', async (req, res) => {
 
     // If no products in database, return mock data
     if (products.length === 0) {
+      // Set different cache headers for mock data
+      res.set({
+        'Cache-Control': 'public, max-age=60', // Shorter cache for mock data
+        'ETag': '"mock-featured-products"'
+      });
       return res.json(getMockProducts());
     }
 
     res.json(products);
   } catch (error) {
     console.error('Error fetching featured products:', error);
+    // Set no-cache headers for error responses
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
     // Fallback to mock data if database error
     res.json(getMockProducts());
   }
