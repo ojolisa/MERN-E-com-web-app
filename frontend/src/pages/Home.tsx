@@ -246,7 +246,7 @@ const Home: React.FC = () => {
                       transition: 'all 0.3s ease',
                       cursor: 'pointer',
                     }}
-                    onClick={() => navigate(`/products/${product._id}`)}
+                    onClick={() => navigate(`/product/${product._id}`)}
                   >
                     <CardMedia
                       component="img"
