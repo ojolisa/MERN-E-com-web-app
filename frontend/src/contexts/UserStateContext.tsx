@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { SavedItem, RecentlyViewedItem, SearchHistoryItem, UserStateContextType } from '../types';
 import { authAPI } from '../services/api';
 import { useAuth } from './AuthContext';
@@ -71,7 +71,7 @@ export const UserStateProvider: React.FC<UserStateProviderProps> = ({ children }
     }
   }, [savedItems, recentlyViewed, searchHistory, user]);
 
-  const addToSaved = async (productId: string) => {
+  const addToSaved = useCallback(async (productId: string) => {
     if (user && token) {
       try {
         await authAPI.saveItem(productId);
@@ -93,9 +93,9 @@ export const UserStateProvider: React.FC<UserStateProviderProps> = ({ children }
         return [newSavedItem, ...prev];
       });
     }
-  };
+  }, [user, token]);
 
-  const removeFromSaved = async (productId: string) => {
+  const removeFromSaved = useCallback(async (productId: string) => {
     if (user && token) {
       try {
         await authAPI.unsaveItem(productId);
@@ -106,9 +106,9 @@ export const UserStateProvider: React.FC<UserStateProviderProps> = ({ children }
     } else {
       setSavedItems(prev => prev.filter(item => item.productId._id !== productId));
     }
-  };
+  }, [user, token]);
 
-  const addToRecentlyViewed = async (productId: string) => {
+  const addToRecentlyViewed = useCallback(async (productId: string) => {
     if (user && token) {
       try {
         await authAPI.addToRecentlyViewed(productId);
@@ -129,9 +129,9 @@ export const UserStateProvider: React.FC<UserStateProviderProps> = ({ children }
         return updated.slice(0, 20);
       });
     }
-  };
+  }, [user, token]);
 
-  const addToSearchHistory = async (query: string) => {
+  const addToSearchHistory = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
     if (user && token) {
@@ -154,14 +154,14 @@ export const UserStateProvider: React.FC<UserStateProviderProps> = ({ children }
         return updated.slice(0, 10);
       });
     }
-  };
+  }, [user, token]);
 
-  const clearSearchHistory = () => {
+  const clearSearchHistory = useCallback(() => {
     setSearchHistory([]);
     if (!user) {
       localStorage.removeItem('searchHistory');
     }
-  };
+  }, [user]);
 
   const value: UserStateContextType = {
     savedItems,
