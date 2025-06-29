@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import { useCart } from '../contexts/CartContext'
 
 function Header({ user, onLogout }) {
   const navigate = useNavigate()
+  const { getTotalItems } = useCart()
 
   const handleLogout = async () => {
     try {
@@ -22,28 +24,41 @@ function Header({ user, onLogout }) {
             <h1>ShopEasy</h1>
           </Link>
           <nav className="nav-links">
-            <Link to="/#products">Products</Link>
+            <Link to="/products">Products</Link>
             <Link to="/#about">About</Link>
             <Link to="/#contact">Contact</Link>
           </nav>
-          <div className="auth-buttons">
-            {user ? (
-              <div className="user-menu">
-                <span className="welcome">Welcome, {user.name}!</span>
-                <button className="btn btn-secondary" onClick={handleLogout}>
-                  Logout
-                </button>
+          <div className="header-actions">
+            <Link to="/cart" className="cart-link">
+              <div className="cart-icon">
+                🛒
+                {getTotalItems() > 0 && (
+                  <span className="cart-badge">{getTotalItems()}</span>
+                )}
               </div>
-            ) : (
-              <>
-                <Link to="/login" className="btn btn-secondary">
-                  Login
-                </Link>
-                <Link to="/signup" className="btn btn-primary">
-                  Sign Up
-                </Link>
-              </>
-            )}
+            </Link>
+            <div className="auth-buttons">
+              {user ? (
+                <div className="user-menu">
+                  <Link to="/profile" className="profile-link">
+                    Profile
+                  </Link>
+                  <span className="welcome">Welcome, {user.name}!</span>
+                  <button className="btn btn-secondary" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link to="/login" className="btn btn-secondary">
+                    Login
+                  </Link>
+                  <Link to="/signup" className="btn btn-primary">
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

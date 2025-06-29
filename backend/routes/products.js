@@ -39,12 +39,14 @@ router.get('/', async (req, res) => {
       query['rating.average'] = { $gte: Number(minRating) };
     }
     if (search) {
+      // Use either text search or regex search, not both
+      // Text search is more efficient for full-text searches
+      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
       query.$or = [
-        { $text: { $search: search } },
-        { name: new RegExp(search, 'i') },
-        { description: new RegExp(search, 'i') },
-        { category: new RegExp(search, 'i') },
-        { brand: new RegExp(search, 'i') }
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+        { brand: searchRegex }
       ];
     }
 

@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import api from './services/api'
+import { CartProvider } from './contexts/CartContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Home from './components/Home'
 import Login from './components/Login'
 import Signup from './components/Signup'
+import Products from './components/Products'
+import ProductDetail from './components/ProductDetail'
+import Cart from './components/Cart'
+import Checkout from './components/Checkout'
+import OrderConfirmation from './components/OrderConfirmation'
+import Profile from './components/Profile'
 import './App.css'
 
 function App() {
@@ -51,21 +58,29 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="app">
-        <Header user={user} onLogout={handleLogout} />
-        
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
-          </Routes>
-        </main>
+    <CartProvider>
+      <Router>
+        <div className="app">
+          <Header user={user} onLogout={handleLogout} />
+          
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+              <Route path="/profile" element={<Profile user={user} />} />
+            </Routes>
+          </main>
 
-        <Footer />
-      </div>
-    </Router>
+          <Footer />
+        </div>
+      </Router>
+    </CartProvider>
   )
 }
 

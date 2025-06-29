@@ -1,3 +1,6 @@
+/* Import component styles */
+@import './components/Components.css';
+
 /* Reset and base styles */
 * {
   margin: 0;

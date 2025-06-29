@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import api from '../services/api'
+import ProductCard from './ProductCard'
 
 function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([])
@@ -32,9 +34,9 @@ function Home() {
             <p className="hero-subtitle">
               Shop the latest trends and find everything you need in one place
             </p>
-            <button className="btn btn-primary btn-large">
+            <Link to="/products" className="btn btn-primary btn-large">
               Shop Now
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -42,7 +44,12 @@ function Home() {
       {/* Featured Products */}
       <section className="featured-products" id="products">
         <div className="container">
-          <h3 className="section-title">Featured Products</h3>
+          <div className="section-header">
+            <h3 className="section-title">Featured Products</h3>
+            <Link to="/products" className="view-all-btn">
+              View All Products →
+            </Link>
+          </div>
           
           {loading ? (
             <div className="loading">
@@ -53,28 +60,7 @@ function Home() {
             <div className="products-grid">
               {featuredProducts.length > 0 ? (
                 featuredProducts.map(product => (
-                  <div key={product._id} className="product-card">
-                    <div className="product-image">
-                      {product.images && product.images.length > 0 ? (
-                        <img src={product.images[0]} alt={product.name} />
-                      ) : (
-                        <div className="placeholder-image">
-                          <span>No Image</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="product-info">
-                      <h4 className="product-name">{product.name}</h4>
-                      <p className="product-price">${product.price}</p>
-                      <div className="product-rating">
-                        <span className="stars">★★★★☆</span>
-                        <span className="rating-text">({product.rating?.average || 4.5})</span>
-                      </div>
-                      <button className="btn btn-primary btn-small">
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
+                  <ProductCard key={product._id} product={product} />
                 ))
               ) : (
                 <div className="no-products">
