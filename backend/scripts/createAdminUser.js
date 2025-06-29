@@ -79,71 +79,7 @@ const createAdminUser = async () => {
   }
 };
 
-// Function to create admin user with custom details
-const createCustomAdminUser = async (name, email, password) => {
-  try {
-    // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      if (existingUser.role !== 'admin') {
-        existingUser.role = 'admin';
-        await existingUser.save();
-        console.log(`Updated existing user ${email} to admin role`);
-      } else {
-        console.log(`User ${email} is already an admin`);
-      }
-    } else {
-      // Create new admin user
-      const adminUser = new User({
-        name,
-        email,
-        password,
-        role: 'admin',
-        preferences: {
-          currency: 'USD',
-          language: 'en',
-          theme: 'light',
-          notifications: {
-            email: true,
-            promotions: false,
-            orderUpdates: true
-          }
-        }
-      });
-      
-      await adminUser.save();
-      console.log(`Admin user created: ${email}`);
-    }
-
-    await mongoose.connection.close();
-  } catch (error) {
-    console.error('Error:', error.message);
-    await mongoose.connection.close();
-  }
-};
-
-// Export functions for use in other scripts
-module.exports = { createAdminUser, createCustomAdminUser };
-
-// If this script is run directly
-if (require.main === module) {
-  // Check for command line arguments
-  const args = process.argv.slice(2);
-  
-  if (args.length === 3) {
-    const [name, email, password] = args;
-    createCustomAdminUser(name, email, password);
-  } else if (args.length === 0) {
-    createAdminUser();
-  } else {
-    console.log('Usage:');
-    console.log('  node scripts/createAdminUser.js');
-    console.log('  node scripts/createAdminUser.js "Admin Name" "admin@email.com" "password123"');
-  }
-}
+// Run the script
+createAdminUser().catch(err => {
+  console.error('Script execution error:', err.message);
+});

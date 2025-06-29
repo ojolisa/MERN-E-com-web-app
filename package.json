@@ -1,25 +1,26 @@
 {
-  "name": "ecommerce-fullstack",
+  "name": "ecomm-fullstack",
   "version": "1.0.0",
-  "description": "Full-stack e-commerce application",
+  "description": "E-commerce application with React frontend and Node.js backend",
+  "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm start",
+    "client": "cd frontend && npm run dev",
+    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "build": "cd frontend && npm run build",
-    "install-server": "cd backend && npm install",
-    "install-client": "cd frontend && npm install",
-    "install-all": "npm run install-server && npm run install-client"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+    "start": "cd backend && npm start"
   },
   "keywords": [
     "ecommerce",
     "react",
     "nodejs",
+    "express",
     "mongodb"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
 }
