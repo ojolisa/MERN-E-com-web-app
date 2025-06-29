@@ -116,7 +116,7 @@ function App() {
                       <p className="product-price">${product.price}</p>
                       <div className="product-rating">
                         <span className="stars">★★★★☆</span>
-                        <span className="rating-text">({product.rating || 4.5})</span>
+                        <span className="rating-text">({product.rating?.average || 4.5})</span>
                       </div>
                       <button className="btn btn-primary btn-small">
                         Add to Cart
