@@ -126,8 +126,24 @@ router.get('/me', auth, async (req, res) => {
 // Update user preferences
 router.put('/preferences', auth, async (req, res) => {
   try {
-    await req.user.updatePreferences(req.body);
-    res.json({ message: 'Preferences updated successfully' });
+    const { currency, language, theme, emailNotifications, smsNotifications } = req.body;
+    
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { 
+        'preferences.currency': currency,
+        'preferences.language': language,
+        'preferences.theme': theme,
+        'preferences.emailNotifications': emailNotifications,
+        'preferences.smsNotifications': smsNotifications
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.json({ 
+      message: 'Preferences updated successfully',
+      preferences: user.preferences
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -235,6 +251,44 @@ router.put('/profile', auth, async (req, res) => {
         avatar: user.avatar
       }
     });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Change password
+router.put('/change-password', auth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    // Verify current password
+    const isMatch = await req.user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    // Validate new password
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    // Update password
+    req.user.password = newPassword;
+    await req.user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Delete account
+router.delete('/delete-account', auth, async (req, res) => {
+  try {
+    // Remove user from database
+    await User.findByIdAndDelete(req.user._id);
+    
+    res.json({ message: 'Account deleted successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

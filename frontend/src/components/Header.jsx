@@ -43,6 +43,9 @@ function Header({ user, onLogout }) {
                   <Link to="/profile" className="profile-link">
                     Profile
                   </Link>
+                  <Link to="/settings" className="profile-link">
+                    Settings
+                  </Link>
                   <span className="welcome">Welcome, {user.name}!</span>
                   <button className="btn btn-secondary" onClick={handleLogout}>
                     Logout

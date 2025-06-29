@@ -57,6 +57,23 @@ export const authAPI = {
       body: JSON.stringify(userData),
     }),
 
+  changePassword: (passwordData) => 
+    apiRequest('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify(passwordData),
+    }),
+
+  updatePreferences: (preferences) => 
+    apiRequest('/auth/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(preferences),
+    }),
+
+  deleteAccount: () => 
+    apiRequest('/auth/delete-account', {
+      method: 'DELETE',
+    }),
+
   logout: () => {
     localStorage.removeItem('token');
     return Promise.resolve();

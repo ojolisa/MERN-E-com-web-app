@@ -13,6 +13,7 @@ import Cart from './components/Cart'
 import Checkout from './components/Checkout'
 import OrderConfirmation from './components/OrderConfirmation'
 import Profile from './components/Profile'
+import UserSettings from './components/UserSettings'
 import './App.css'
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
               <Route path="/profile" element={<Profile user={user} />} />
+              <Route path="/settings" element={<UserSettings user={user} onUserUpdate={setUser} />} />
             </Routes>
           </main>
 
