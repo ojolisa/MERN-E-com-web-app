@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import api from './services/api'
 import { CartProvider } from './contexts/CartContext'
 import Header from './components/Header'
@@ -14,6 +14,11 @@ import Checkout from './components/Checkout'
 import OrderConfirmation from './components/OrderConfirmation'
 import Profile from './components/Profile'
 import UserSettings from './components/UserSettings'
+import AdminDashboard from './components/AdminDashboard'
+import AdminUsers from './components/AdminUsers'
+import AdminProducts from './components/AdminProducts'
+import AdminOrders from './components/AdminOrders'
+import Analytics from './components/Analytics'
 import './App.css'
 
 function App() {
@@ -76,6 +81,12 @@ function App() {
               <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
               <Route path="/profile" element={<Profile user={user} />} />
               <Route path="/settings" element={<UserSettings user={user} onUserUpdate={setUser} />} />
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/analytics" element={<Analytics />} />
             </Routes>
           </main>
 

@@ -44,9 +44,16 @@ function Header({ user, onLogout }) {
                   <Link to="/profile" className="profile-link">
                     Profile
                   </Link>
-                  <Link to="/settings" className="profile-link">
-                    Settings
-                  </Link>
+                  <div className="settings-menu">
+                    <Link to="/settings" className="profile-link">
+                      Settings
+                    </Link>
+                    {user.role === 'admin' && (
+                      <Link to="/admin/dashboard" className="admin-link">
+                        Admin Dashboard
+                      </Link>
+                    )}
+                  </div>
                   <span className="welcome">Welcome, {user.name}!</span>
                   <button className="btn btn-secondary" onClick={handleLogout}>
                     Logout

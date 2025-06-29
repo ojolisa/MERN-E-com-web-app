@@ -36,6 +36,20 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
+// Generic HTTP methods
+const httpMethods = {
+  get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
+  post: (endpoint, data) => apiRequest(endpoint, { 
+    method: 'POST', 
+    body: JSON.stringify(data) 
+  }),
+  put: (endpoint, data) => apiRequest(endpoint, { 
+    method: 'PUT', 
+    body: JSON.stringify(data) 
+  }),
+  delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
+};
+
 // Auth API
 export const authAPI = {
   register: (userData) => 
@@ -80,6 +94,18 @@ export const authAPI = {
     localStorage.removeItem('token');
     return Promise.resolve();
   },
+
+  // Admin methods
+  getAllUsers: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/auth/admin/users${queryString ? `?${queryString}` : ''}`);
+  },
+
+  getUserStats: () => 
+    apiRequest('/auth/admin/users/stats'),
+
+  getUserAnalytics: () => 
+    apiRequest('/auth/admin/analytics/users'),
 };
 
 // Products API
@@ -111,6 +137,19 @@ export const productsAPI = {
 
   getCategories: () => 
     apiRequest('/products/categories'),
+
+  // Admin methods
+  getStats: () => 
+    apiRequest('/products/admin/stats'),
+
+  getAdminCategories: () => 
+    apiRequest('/products/admin/categories'),
+
+  getInventoryAlerts: () => 
+    apiRequest('/products/admin/inventory/alerts'),
+
+  getTopProducts: () => 
+    apiRequest('/products/admin/analytics/top'),
 };
 
 // Orders API
@@ -133,11 +172,31 @@ export const ordersAPI = {
       body: JSON.stringify({ status }),
     }),
 
-  // Admin only
+  // Admin methods
   getAll: (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return apiRequest(`/orders${queryString ? `?${queryString}` : ''}`);
+    return apiRequest(`/orders/admin/all${queryString ? `?${queryString}` : ''}`);
   },
+
+  getStats: () => 
+    apiRequest('/orders/admin/stats'),
+
+  getAnalytics: () => 
+    apiRequest('/orders/admin/analytics'),
+
+  getSalesAnalytics: () => 
+    apiRequest('/orders/admin/analytics/sales'),
+
+  getRevenueAnalytics: () => 
+    apiRequest('/orders/admin/analytics/revenue'),
+
+  getRecent: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString();
+    return apiRequest(`/orders/admin/recent${queryString ? `?${queryString}` : ''}`);
+  },
+
+  exportReports: () => 
+    apiRequest('/orders/admin/reports/export'),
 };
 
 // Cart API
@@ -188,6 +247,13 @@ export const tokenUtils = {
 
 // Default export for convenience
 const api = {
+  // Generic HTTP methods
+  get: httpMethods.get,
+  post: httpMethods.post,
+  put: httpMethods.put,
+  delete: httpMethods.delete,
+  
+  // Specific API modules
   auth: authAPI,
   products: productsAPI,
   orders: ordersAPI,

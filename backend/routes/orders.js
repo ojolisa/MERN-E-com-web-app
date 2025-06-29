@@ -205,6 +205,70 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
+// Admin routes for order management
+router.get('/admin/all', adminAuth, async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate('user', 'name email')
+      .populate('items.product', 'name images')
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/admin/stats', adminAuth, async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const pendingOrders = await Order.countDocuments({ status: 'pending' });
+    const completedOrders = await Order.countDocuments({ status: 'delivered' });
+    
+    const revenueResult = await Order.aggregate([
+      { $match: { status: { $ne: 'cancelled' } } },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+    ]);
+    
+    const revenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    res.json({
+      total: totalOrders,
+      pending: pendingOrders,
+      completed: completedOrders,
+      revenue: revenue
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put('/admin/:id/status', adminAuth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate('user', 'name email')
+     .populate('items.product', 'name images');
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Admin routes for analytics and reports
 router.get('/admin/analytics', adminAuth, async (req, res) => {
   try {
@@ -305,6 +369,106 @@ router.get('/admin/analytics', adminAuth, async (req, res) => {
   }
 });
 
+// Analytics endpoints
+router.get('/admin/analytics/sales', adminAuth, async (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate },
+          status: { $ne: 'cancelled' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+            day: { $dayOfMonth: '$createdAt' }
+          },
+          orders: { $sum: 1 },
+          revenue: { $sum: '$totalAmount' }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 }
+      },
+      {
+        $project: {
+          date: {
+            $dateFromParts: {
+              year: '$_id.year',
+              month: '$_id.month',
+              day: '$_id.day'
+            }
+          },
+          orders: 1,
+          revenue: 1
+        }
+      }
+    ]);
+
+    res.json(salesData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/admin/analytics/revenue', adminAuth, async (req, res) => {
+  try {
+    const months = parseInt(req.query.months) || 12;
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+
+    const revenueData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate },
+          status: { $ne: 'cancelled' }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          orders: { $sum: 1 },
+          revenue: { $sum: '$totalAmount' }
+        }
+      },
+      {
+        $sort: { '_id.year': 1, '_id.month': 1 }
+      },
+      {
+        $project: {
+          month: {
+            $dateToString: {
+              format: '%Y-%m',
+              date: {
+                $dateFromParts: {
+                  year: '$_id.year',
+                  month: '$_id.month'
+                }
+              }
+            }
+          },
+          orders: 1,
+          revenue: 1
+        }
+      }
+    ]);
+
+    res.json(revenueData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.get('/admin/reports/export', adminAuth, async (req, res) => {
   try {
     const { type, startDate, endDate } = req.query;
@@ -340,6 +504,21 @@ router.get('/admin/reports/export', adminAuth, async (req, res) => {
     }
 
     res.json({ data });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/admin/recent', adminAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    
+    const recentOrders = await Order.find()
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(limit);
+
+    res.json(recentOrders);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

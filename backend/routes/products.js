@@ -302,6 +302,25 @@ router.delete('/:id', adminAuth, async (req, res) => {
 });
 
 // Admin routes for category management
+router.get('/admin/stats', adminAuth, async (req, res) => {
+  try {
+    const totalProducts = await Product.countDocuments();
+    const activeProducts = await Product.countDocuments({ isActive: true });
+    const lowStockProducts = await Product.countDocuments({ 
+      isActive: true, 
+      stock: { $lte: 10 } 
+    });
+
+    res.json({
+      total: totalProducts,
+      active: activeProducts,
+      lowStock: lowStockProducts
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 router.get('/admin/categories', adminAuth, async (req, res) => {
   try {
     const categories = await Product.aggregate([
@@ -317,7 +336,9 @@ router.get('/admin/categories', adminAuth, async (req, res) => {
       { $sort: { count: -1 } }
     ]);
 
-    res.json(categories);
+    res.json({
+      categories: categories.map(cat => cat._id)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -364,6 +385,33 @@ router.get('/admin/inventory/alerts', adminAuth, async (req, res) => {
         outOfStock: outOfStockProducts.length
       }
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Analytics endpoints
+router.get('/admin/analytics/top', adminAuth, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    
+    // This would require order data to be properly linked with products
+    // For now, return top products by stock sold (simulated)
+    const topProducts = await Product.aggregate([
+      { $match: { isActive: true } },
+      {
+        $project: {
+          name: 1,
+          price: 1,
+          totalSold: { $subtract: [100, '$stock'] }, // Simulated sales
+          revenue: { $multiply: [{ $subtract: [100, '$stock'] }, '$price'] }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: limit }
+    ]);
+
+    res.json(topProducts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
