@@ -17,8 +17,8 @@ function Profile({ user }) {
   const loadOrders = async () => {
     try {
       setLoading(true)
-      const response = await api.orders.getMyOrders()
-      setOrders(response.orders || [])
+      const orders = await api.orders.getMyOrders()
+      setOrders(orders || [])
     } catch (error) {
       console.error('Failed to load orders:', error)
     } finally {
@@ -27,6 +27,7 @@ function Profile({ user }) {
   }
 
   const getStatusBadgeClass = (status) => {
+    if (!status) return 'status-default'
     switch (status.toLowerCase()) {
       case 'pending': return 'status-pending'
       case 'processing': return 'status-processing'
@@ -156,7 +157,7 @@ function Profile({ user }) {
                         </div>
                         <div className="order-status">
                           <span className={`status-badge ${getStatusBadgeClass(order.status)}`}>
-                            {order.status}
+                            {order.status || 'Unknown'}
                           </span>
                         </div>
                       </div>

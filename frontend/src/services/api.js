@@ -24,7 +24,9 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+      const error = new Error(data.message || 'Something went wrong');
+      error.response = { data, status: response.status };
+      throw error;
     }
 
     return data;
@@ -138,6 +140,34 @@ export const ordersAPI = {
   },
 };
 
+// Cart API
+export const cartAPI = {
+  addToCart: (productId, quantity = 1) => 
+    apiRequest('/auth/cart/add', {
+      method: 'POST',
+      body: JSON.stringify({ productId, quantity }),
+    }),
+
+  removeFromCart: (productId) => 
+    apiRequest(`/auth/cart/${productId}`, {
+      method: 'DELETE',
+    }),
+
+  updateQuantity: (productId, quantity) => 
+    apiRequest(`/auth/cart/${productId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ quantity }),
+    }),
+
+  clearCart: () => 
+    apiRequest('/auth/cart', {
+      method: 'DELETE',
+    }),
+
+  getCart: () => 
+    apiRequest('/auth/me').then(data => data.user.cart || []),
+};
+
 // Token management utilities
 export const tokenUtils = {
   save: (token) => localStorage.setItem('token', token),
@@ -161,6 +191,7 @@ const api = {
   auth: authAPI,
   products: productsAPI,
   orders: ordersAPI,
+  cart: cartAPI,
   token: tokenUtils,
 };
 

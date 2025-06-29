@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useCart } from '../contexts/CartContext'
 import api from '../services/api'
 import './Auth.css'
 
@@ -13,6 +14,7 @@ function Signup({ onLogin }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { syncCartWithBackend } = useCart()
 
   const handleChange = (e) => {
     setFormData({
@@ -51,6 +53,9 @@ function Signup({ onLogin }) {
       
       // Save token
       api.token.save(response.token)
+      
+      // Sync cart with backend after successful registration
+      await syncCartWithBackend()
       
       // Call parent callback with user data
       onLogin(response.user)

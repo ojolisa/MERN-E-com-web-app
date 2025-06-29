@@ -6,6 +6,7 @@ function OrderConfirmation() {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     loadOrder()
@@ -14,10 +15,12 @@ function OrderConfirmation() {
   const loadOrder = async () => {
     try {
       setLoading(true)
-      const response = await api.orders.getById(orderId)
-      setOrder(response.order)
+      setError(null)
+      const order = await api.orders.getById(orderId)
+      setOrder(order)
     } catch (error) {
       console.error('Failed to load order:', error)
+      setError(error.response?.data?.message || 'Failed to load order details')
     } finally {
       setLoading(false)
     }
@@ -42,15 +45,22 @@ function OrderConfirmation() {
     )
   }
 
-  if (!order) {
+  if (!order || error) {
     return (
-      <div className="container">
-        <div className="error-message">
-          <h2>Order not found</h2>
-          <p>The order you're looking for doesn't exist or you don't have permission to view it.</p>
-          <Link to="/profile" className="btn btn-primary">
-            View All Orders
-          </Link>
+      <div className="order-confirmation-page">
+        <div className="container">
+          <div className="error-message">
+            <h2>Order not found</h2>
+            <p>{error || "The order you're looking for doesn't exist or you don't have permission to view it."}</p>
+            <div className="error-actions">
+              <Link to="/profile" className="btn btn-primary">
+                View All Orders
+              </Link>
+              <Link to="/products" className="btn btn-outline">
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -79,8 +89,8 @@ function OrderConfirmation() {
               </div>
               <div className="meta-item">
                 <label>Status:</label>
-                <span className={`status-badge status-${order.status.toLowerCase()}`}>
-                  {order.status}
+                <span className={`status-badge status-${order.status?.toLowerCase() || 'pending'}`}>
+                  {order.status || 'Pending'}
                 </span>
               </div>
               <div className="meta-item">

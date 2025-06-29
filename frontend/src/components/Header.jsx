@@ -4,11 +4,12 @@ import { useCart } from '../contexts/CartContext'
 
 function Header({ user, onLogout }) {
   const navigate = useNavigate()
-  const { getTotalItems } = useCart()
+  const { getTotalItems, clearCartOnLogout } = useCart()
 
   const handleLogout = async () => {
     try {
       await api.auth.logout()
+      clearCartOnLogout()
       onLogout()
       navigate('/')
     } catch (error) {

@@ -10,13 +10,13 @@ function Checkout() {
   const [formData, setFormData] = useState({
     shippingAddress: {
       fullName: '',
-      address: '',
+      street: '',
       city: '',
       state: '',
       zipCode: '',
       country: 'US'
     },
-    paymentMethod: 'credit-card',
+    paymentMethod: 'credit_card',
     cardInfo: {
       cardNumber: '',
       expiryDate: '',
@@ -122,13 +122,13 @@ function Checkout() {
                   </div>
                   
                   <div className="form-group full-width">
-                    <label htmlFor="address">Address *</label>
+                    <label htmlFor="street">Street Address *</label>
                     <input
                       type="text"
-                      id="address"
+                      id="street"
                       required
-                      value={formData.shippingAddress.address}
-                      onChange={(e) => handleInputChange('shippingAddress', 'address', e.target.value)}
+                      value={formData.shippingAddress.street}
+                      onChange={(e) => handleInputChange('shippingAddress', 'street', e.target.value)}
                       className="form-input"
                     />
                   </div>
@@ -195,8 +195,8 @@ function Checkout() {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="credit-card"
-                      checked={formData.paymentMethod === 'credit-card'}
+                      value="credit_card"
+                      checked={formData.paymentMethod === 'credit_card'}
                       onChange={(e) => setFormData(prev => ({ ...prev, paymentMethod: e.target.value }))}
                     />
                     <span>Credit Card</span>
@@ -214,7 +214,7 @@ function Checkout() {
                   </label>
                 </div>
 
-                {formData.paymentMethod === 'credit-card' && (
+                {formData.paymentMethod === 'credit_card' && (
                   <div className="form-grid">
                     <div className="form-group">
                       <label htmlFor="cardholderName">Cardholder Name *</label>

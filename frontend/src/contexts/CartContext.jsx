@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from 'react'
+import { cartAPI, authAPI } from '../services/api'
 
 const CartContext = createContext()
 
@@ -67,22 +68,60 @@ const initialState = {
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(cartReducer, initialState)
 
-  // Load cart from localStorage on component mount
+  // Load cart from backend on component mount if user is authenticated
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart')
-    if (savedCart) {
-      try {
-        const cartItems = JSON.parse(savedCart)
-        dispatch({ type: 'LOAD_CART', payload: cartItems })
-      } catch (error) {
-        console.error('Failed to load cart from localStorage:', error)
+    const loadCart = async () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          // Load cart from backend if user is authenticated
+          const response = await authAPI.getProfile()
+          const backendCart = response.user.cart || []
+          
+          // Transform backend cart format to frontend format
+          const transformedCart = backendCart.map(item => ({
+            product: item.productId,
+            quantity: item.quantity
+          }))
+          
+          dispatch({ type: 'LOAD_CART', payload: transformedCart })
+        } catch (error) {
+          console.error('Failed to load cart from backend:', error)
+          // Fallback to localStorage
+          const savedCart = localStorage.getItem('cart')
+          if (savedCart) {
+            try {
+              const cartItems = JSON.parse(savedCart)
+              dispatch({ type: 'LOAD_CART', payload: cartItems })
+            } catch (error) {
+              console.error('Failed to load cart from localStorage:', error)
+            }
+          }
+        }
+      } else {
+        // Load from localStorage for non-authenticated users
+        const savedCart = localStorage.getItem('cart')
+        if (savedCart) {
+          try {
+            const cartItems = JSON.parse(savedCart)
+            dispatch({ type: 'LOAD_CART', payload: cartItems })
+          } catch (error) {
+            console.error('Failed to load cart from localStorage:', error)
+          }
+        }
       }
     }
+
+    loadCart()
   }, [])
 
-  // Save cart to localStorage whenever items change
+  // Save cart to localStorage whenever items change (for non-authenticated users)
+  // For authenticated users, changes are saved to backend immediately
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(state.items))
+    const token = localStorage.getItem('token')
+    if (!token) {
+      localStorage.setItem('cart', JSON.stringify(state.items))
+    }
   }, [state.items])
 
   // Cart actions
@@ -100,22 +139,46 @@ export function CartProvider({ children }) {
       throw new Error('Not enough stock available')
     }
 
+    const token = localStorage.getItem('token')
+    
+    if (token) {
+      try {
+        // Sync with backend if user is authenticated
+        await cartAPI.addToCart(product._id, quantity)
+      } catch (error) {
+        console.error('Failed to add to cart in backend:', error)
+        // Continue with local state update even if backend fails
+      }
+    }
+
     dispatch({
       type: 'ADD_TO_CART',
       payload: { product, quantity }
     })
   }
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = async (productId) => {
+    const token = localStorage.getItem('token')
+    
+    if (token) {
+      try {
+        // Sync with backend if user is authenticated
+        await cartAPI.removeFromCart(productId)
+      } catch (error) {
+        console.error('Failed to remove from cart in backend:', error)
+        // Continue with local state update even if backend fails
+      }
+    }
+
     dispatch({
       type: 'REMOVE_FROM_CART',
       payload: productId
     })
   }
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = async (productId, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(productId)
+      await removeFromCart(productId)
       return
     }
 
@@ -125,13 +188,81 @@ export function CartProvider({ children }) {
       throw new Error('Not enough stock available')
     }
 
+    const token = localStorage.getItem('token')
+    
+    if (token) {
+      try {
+        // Sync with backend if user is authenticated
+        await cartAPI.updateQuantity(productId, quantity)
+      } catch (error) {
+        console.error('Failed to update quantity in backend:', error)
+        // Continue with local state update even if backend fails
+      }
+    }
+
     dispatch({
       type: 'UPDATE_QUANTITY',
       payload: { productId, quantity }
     })
   }
 
-  const clearCart = () => {
+  const clearCart = async () => {
+    const token = localStorage.getItem('token')
+    
+    if (token) {
+      try {
+        // Sync with backend if user is authenticated
+        await cartAPI.clearCart()
+      } catch (error) {
+        console.error('Failed to clear cart in backend:', error)
+        // Continue with local state update even if backend fails
+      }
+    }
+
+    dispatch({ type: 'CLEAR_CART' })
+  }
+
+  // Sync cart with backend when user logs in
+  const syncCartWithBackend = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    try {
+      // Get current localStorage cart
+      const localCart = state.items
+
+      // If there are items in local cart, sync them to backend
+      if (localCart.length > 0) {
+        for (const item of localCart) {
+          try {
+            await cartAPI.addToCart(item.product._id, item.quantity)
+          } catch (error) {
+            console.error('Failed to sync cart item to backend:', error)
+          }
+        }
+      }
+
+      // Load the updated cart from backend
+      const response = await authAPI.getProfile()
+      const backendCart = response.user.cart || []
+      
+      // Transform backend cart format to frontend format
+      const transformedCart = backendCart.map(item => ({
+        product: item.productId,
+        quantity: item.quantity
+      }))
+      
+      dispatch({ type: 'LOAD_CART', payload: transformedCart })
+      
+      // Clear localStorage cart after successful sync
+      localStorage.removeItem('cart')
+    } catch (error) {
+      console.error('Failed to sync cart with backend:', error)
+    }
+  }
+
+  // Clear cart when user logs out
+  const clearCartOnLogout = () => {
     dispatch({ type: 'CLEAR_CART' })
   }
 
@@ -161,6 +292,8 @@ export function CartProvider({ children }) {
     removeFromCart,
     updateQuantity,
     clearCart,
+    syncCartWithBackend,
+    clearCartOnLogout,
     getTotalItems,
     getTotalPrice,
     isInCart,

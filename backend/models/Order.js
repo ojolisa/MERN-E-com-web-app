@@ -30,6 +30,10 @@ const orderSchema = new mongoose.Schema({
     min: 0
   },
   shippingAddress: {
+    fullName: {
+      type: String,
+      required: true
+    },
     street: {
       type: String,
       required: true
