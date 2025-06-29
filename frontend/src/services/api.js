@@ -49,7 +49,7 @@ export const authAPI = {
     }),
 
   getProfile: () => 
-    apiRequest('/auth/profile'),
+    apiRequest('/auth/me'),
 
   updateProfile: (userData) => 
     apiRequest('/auth/profile', {
