@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
     // Build query
     const query = { isActive: true };
-    
+
     if (category) {
       // Support multiple categories separated by comma
       const categories = category.split(',');
@@ -85,13 +85,13 @@ router.get('/featured', async (req, res) => {
     });
 
     // Try to get from database first
-    const products = await Product.find({ 
+    const products = await Product.find({
       isActive: true,
       'rating.average': { $gte: 4.0 }
     })
-    .sort({ 'rating.average': -1, 'rating.count': -1 })
-    .limit(8)
-    .populate('reviews.user', 'name');
+      .sort({ 'rating.average': -1, 'rating.count': -1 })
+      .limit(8)
+      .populate('reviews.user', 'name');
 
     // If no products in database, return mock data
     if (products.length === 0) {
@@ -201,7 +201,7 @@ router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
       .populate('reviews.user', 'name avatar');
-    
+
     if (!product || !product.isActive) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -271,7 +271,7 @@ router.put('/:id', adminAuth, async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
+
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -290,7 +290,7 @@ router.delete('/:id', adminAuth, async (req, res) => {
       { isActive: false },
       { new: true }
     );
-    
+
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -306,9 +306,9 @@ router.get('/admin/stats', adminAuth, async (req, res) => {
   try {
     const totalProducts = await Product.countDocuments();
     const activeProducts = await Product.countDocuments({ isActive: true });
-    const lowStockProducts = await Product.countDocuments({ 
-      isActive: true, 
-      stock: { $lte: 10 } 
+    const lowStockProducts = await Product.countDocuments({
+      isActive: true,
+      stock: { $lte: 10 }
     });
 
     res.json({
@@ -347,7 +347,7 @@ router.get('/admin/categories', adminAuth, async (req, res) => {
 router.put('/admin/categories/:oldName/:newName', adminAuth, async (req, res) => {
   try {
     const { oldName, newName } = req.params;
-    
+
     const result = await Product.updateMany(
       { category: oldName },
       { category: newName }
@@ -394,7 +394,7 @@ router.get('/admin/inventory/alerts', adminAuth, async (req, res) => {
 router.get('/admin/analytics/top', adminAuth, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
-    
+
     // This would require order data to be properly linked with products
     // For now, return top products by stock sold (simulated)
     const topProducts = await Product.aggregate([

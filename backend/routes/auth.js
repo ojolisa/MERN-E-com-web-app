@@ -127,10 +127,10 @@ router.get('/me', auth, async (req, res) => {
 router.put('/preferences', auth, async (req, res) => {
   try {
     const { currency, language, theme, emailNotifications, smsNotifications } = req.body;
-    
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { 
+      {
         'preferences.currency': currency,
         'preferences.language': language,
         'preferences.theme': theme,
@@ -140,7 +140,7 @@ router.put('/preferences', auth, async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    res.json({ 
+    res.json({
       message: 'Preferences updated successfully',
       preferences: user.preferences
     });
@@ -232,7 +232,7 @@ router.post('/search', auth, async (req, res) => {
 router.put('/profile', auth, async (req, res) => {
   try {
     const { name, phone, address } = req.body;
-    
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, phone, address },
@@ -260,7 +260,7 @@ router.put('/profile', auth, async (req, res) => {
 router.put('/change-password', auth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    
+
     // Verify current password
     const isMatch = await req.user.comparePassword(currentPassword);
     if (!isMatch) {
@@ -287,7 +287,7 @@ router.delete('/delete-account', auth, async (req, res) => {
   try {
     // Remove user from database
     await User.findByIdAndDelete(req.user._id);
-    
+
     res.json({ message: 'Account deleted successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -298,7 +298,7 @@ router.delete('/delete-account', auth, async (req, res) => {
 router.get('/admin/users', adminAuth, async (req, res) => {
   try {
     const { page = 1, limit = 10, search, role } = req.query;
-    
+
     const query = {};
     if (search) {
       query.$or = [
@@ -331,8 +331,8 @@ router.get('/admin/users/stats', adminAuth, async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const adminUsers = await User.countDocuments({ role: 'admin' });
-    const activeUsers = await User.countDocuments({ 
-      lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } 
+    const activeUsers = await User.countDocuments({
+      lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
     });
 
     res.json({
@@ -349,7 +349,7 @@ router.get('/admin/users/stats', adminAuth, async (req, res) => {
 router.put('/admin/users/:id/role', adminAuth, async (req, res) => {
   try {
     const { role } = req.body;
-    
+
     if (!['user', 'admin'].includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
     }
@@ -376,7 +376,7 @@ router.put('/admin/users/:id/role', adminAuth, async (req, res) => {
 router.delete('/admin/users/:id', adminAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

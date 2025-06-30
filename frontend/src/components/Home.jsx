@@ -1,26 +1,30 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import api from '../services/api'
-import ProductCard from './ProductCard'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import api from "../services/api";
+import ProductCard from "./ProductCard";
 
 function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadFeaturedProducts()
-  }, [])
+    loadFeaturedProducts();
+  }, []);
 
   const loadFeaturedProducts = async () => {
     try {
-      const response = await api.products.getAll({ limit: 6, sortBy: 'rating', sortOrder: 'desc' })
-      setFeaturedProducts(response.products || [])
+      const response = await api.products.getAll({
+        limit: 6,
+        sortBy: "rating",
+        sortOrder: "desc",
+      });
+      setFeaturedProducts(response.products || []);
     } catch (error) {
-      console.error('Failed to load products:', error)
+      console.error("Failed to load products:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -28,9 +32,7 @@ function Home() {
       <section className="hero">
         <div className="container">
           <div className="hero-content">
-            <h2 className="hero-title">
-              Discover Amazing Products
-            </h2>
+            <h2 className="hero-title">Discover Amazing Products</h2>
             <p className="hero-subtitle">
               Shop the latest trends and find everything you need in one place
             </p>
@@ -50,7 +52,7 @@ function Home() {
               View All Products →
             </Link>
           </div>
-          
+
           {loading ? (
             <div className="loading">
               <div className="spinner"></div>
@@ -59,7 +61,7 @@ function Home() {
           ) : (
             <div className="products-grid">
               {featuredProducts.length > 0 ? (
-                featuredProducts.map(product => (
+                featuredProducts.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))
               ) : (
@@ -102,7 +104,7 @@ function Home() {
         </div>
       </section>
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;

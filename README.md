@@ -5,6 +5,7 @@ A modern, full-stack e-commerce application built with React.js frontend and Nod
 ## 🚀 Features
 
 ### User Features
+
 - **User Authentication**: Sign up, login, and logout functionality
 - **Product Browsing**: View products with detailed information
 - **Search & Filter**: Search for products with advanced filtering
@@ -14,6 +15,7 @@ A modern, full-stack e-commerce application built with React.js frontend and Nod
 - **Order History**: View past orders and order status
 
 ### Admin Features
+
 - **Admin Dashboard**: Comprehensive overview with analytics
 - **Product Management**: Create, read, update, and delete products
 - **User Management**: View and manage user accounts
@@ -23,18 +25,21 @@ A modern, full-stack e-commerce application built with React.js frontend and Nod
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React.js** (v19.1.0) - UI library
 - **React Router DOM** (v7.6.3) - Client-side routing
 - **Vite** (v7.0.0) - Build tool and development server
 - **CSS3** - Styling
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express.js** (v5.1.0) - Web framework
 - **MongoDB** - Database
 - **Mongoose** (v8.16.1) - MongoDB object modeling
 
 ### Security & Middleware
+
 - **JWT** (jsonwebtoken) - Authentication tokens
 - **bcryptjs** - Password hashing
 - **Helmet** - Security headers
@@ -95,6 +100,7 @@ ecomm/
 ## 🚦 Getting Started
 
 ### Prerequisites
+
 - **Node.js** (v16 or higher)
 - **MongoDB** (running locally or MongoDB Atlas)
 - **npm** or **yarn** package manager
@@ -102,19 +108,22 @@ ecomm/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd ecomm
    ```
 
 2. **Install dependencies for all packages**
+
    ```bash
    npm run install-deps
    ```
 
 3. **Environment Setup**
-   
+
    Create a `.env` file in the `backend` directory:
+
    ```env
    PORT=5000
    MONGODB_URI=mongodb://localhost:27017/ecommerce
@@ -123,14 +132,16 @@ ecomm/
    ```
 
 4. **Start MongoDB**
-   
+
    Make sure MongoDB is running on your system:
+
    ```bash
    # For local MongoDB installation
    mongod
    ```
 
 5. **Seed the database (optional)**
+
    ```bash
    cd backend
    npm run seed
@@ -145,17 +156,22 @@ ecomm/
 ### Running the Application
 
 #### Development Mode
+
 Run both frontend and backend concurrently:
+
 ```bash
 npm run dev
 ```
 
 This will start:
+
 - Backend server on `http://localhost:5000`
 - Frontend development server on `http://localhost:5173`
 
 #### Production Mode
+
 1. Build the frontend:
+
    ```bash
    npm run build
    ```
@@ -168,6 +184,7 @@ This will start:
 ### Individual Services
 
 #### Backend Only
+
 ```bash
 npm run server
 # or
@@ -175,6 +192,7 @@ cd backend && npm run dev
 ```
 
 #### Frontend Only
+
 ```bash
 npm run client
 # or
@@ -184,11 +202,13 @@ cd frontend && npm run dev
 ## 📚 API Documentation
 
 ### Authentication Endpoints
+
 - `POST /api/auth/signup` - User registration
 - `POST /api/auth/login` - User login
 - `GET /api/auth/profile` - Get user profile (protected)
 
 ### Product Endpoints
+
 - `GET /api/products` - Get all products
 - `GET /api/products/:id` - Get product by ID
 - `POST /api/products` - Create product (admin only)
@@ -196,6 +216,7 @@ cd frontend && npm run dev
 - `DELETE /api/products/:id` - Delete product (admin only)
 
 ### Order Endpoints
+
 - `GET /api/orders` - Get user orders (protected)
 - `POST /api/orders` - Create new order (protected)
 - `GET /api/orders/:id` - Get order by ID (protected)
@@ -203,18 +224,21 @@ cd frontend && npm run dev
 ## 🔧 Available Scripts
 
 ### Root Level
+
 - `npm run dev` - Start both frontend and backend in development mode
 - `npm run install-deps` - Install dependencies for all packages
 - `npm run build` - Build frontend for production
 - `npm start` - Start backend in production mode
 
 ### Backend Scripts
+
 - `npm run dev` - Start backend with nodemon (auto-restart)
 - `npm start` - Start backend in production mode
 - `npm run seed` - Seed database with sample data
 - `npm run create-admin-script` - Create admin user
 
 ### Frontend Scripts
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
@@ -223,6 +247,7 @@ cd frontend && npm run dev
 ## 🔐 Authentication
 
 The application uses JWT (JSON Web Tokens) for authentication:
+
 - Tokens are stored in localStorage
 - Protected routes require valid JWT token
 - Admin routes require admin role verification
@@ -230,6 +255,7 @@ The application uses JWT (JSON Web Tokens) for authentication:
 ## 🎨 Styling
 
 The application uses vanilla CSS with:
+
 - Responsive design principles
 - Modern UI/UX patterns
 - Component-specific stylesheets
@@ -238,15 +264,18 @@ The application uses vanilla CSS with:
 ## 🚀 Deployment
 
 ### Frontend (Vercel/Netlify)
+
 1. Build the frontend: `npm run build`
 2. Deploy the `dist` folder
 
 ### Backend (Heroku/Railway/DigitalOcean)
+
 1. Set environment variables
 2. Deploy the `backend` directory
 3. Ensure MongoDB connection is configured
 
 ### Environment Variables for Production
+
 ```env
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string

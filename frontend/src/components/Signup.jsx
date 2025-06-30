@@ -1,73 +1,73 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '../contexts/CartContext'
-import api from '../services/api'
-import './Auth.css'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+import api from "../services/api";
+import "./Auth.css";
 
 function Signup({ onLogin }) {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
-  const { syncCartWithBackend } = useCart()
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { syncCartWithBackend } = useCart();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const validateForm = () => {
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return false
-    }
-    
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long')
-      return false
+      setError("Passwords do not match");
+      return false;
     }
 
-    return true
-  }
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError("");
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
-      const { confirmPassword, ...signupData } = formData
-      const response = await api.auth.register(signupData)
-      
+      const { confirmPassword, ...signupData } = formData;
+      const response = await api.auth.register(signupData);
+
       // Save token
-      api.token.save(response.token)
-      
+      api.token.save(response.token);
+
       // Sync cart with backend after successful registration
-      await syncCartWithBackend()
-      
+      await syncCartWithBackend();
+
       // Call parent callback with user data
-      onLogin(response.user)
-      
+      onLogin(response.user);
+
       // Navigate to home
-      navigate('/')
+      navigate("/");
     } catch (error) {
-      setError(error.message || 'Signup failed')
+      setError(error.message || "Signup failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="auth-container">
@@ -77,11 +77,7 @@ function Signup({ onLogin }) {
           <p>Join us and start shopping</p>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -140,18 +136,18 @@ function Signup({ onLogin }) {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary btn-full"
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link to="/login" className="auth-link">
               Sign in here
             </Link>
@@ -159,7 +155,7 @@ function Signup({ onLogin }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Signup
+export default Signup;

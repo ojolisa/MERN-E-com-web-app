@@ -278,7 +278,7 @@ const createAdminUser = async () => {
   try {
     // Check if admin user already exists
     const existingAdmin = await User.findOne({ email: 'admin@ecommerce.com' });
-    
+
     if (existingAdmin) {
       console.log('Admin user already exists');
       // Ensure the user has admin role
@@ -314,7 +314,7 @@ const createAdminUser = async () => {
           categories: ['Electronics', 'Clothing', 'Home & Garden']
         }
       });
-      
+
       await adminUser.save();
       console.log('Admin user created successfully!');
       console.log('Email: admin@ecommerce.com');
@@ -330,7 +330,7 @@ const seedProducts = async () => {
     // Connect to MongoDB
     console.log('Attempting to connect to MongoDB...');
     console.log('MongoDB URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce');
-    
+
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce');
     console.log('Connected to MongoDB successfully');
 
@@ -346,11 +346,11 @@ const seedProducts = async () => {
     await createAdminUser();
 
     console.log('Database seeded successfully!');
-    
+
     // Close the connection
     await mongoose.connection.close();
     console.log('MongoDB connection closed');
-    
+
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error.message);

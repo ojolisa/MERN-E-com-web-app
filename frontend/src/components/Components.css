@@ -771,14 +771,16 @@
   color: #333;
 }
 
-.form-input, .form-select {
+.form-input,
+.form-select {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
 }
 
-.form-input:focus, .form-select:focus {
+.form-input:focus,
+.form-select:focus {
   outline: none;
   border-color: #3498db;
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -1466,86 +1468,86 @@
   .products-controls {
     padding: 1rem;
   }
-  
+
   .filters {
     flex-direction: column;
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
   }
-  
+
   .product-detail-content {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .cart-content {
     grid-template-columns: 1fr;
   }
-  
+
   .cart-item {
     grid-template-columns: 80px 1fr;
     gap: 1rem;
   }
-  
+
   .checkout-content {
     grid-template-columns: 1fr;
   }
-  
+
   .checkout-sidebar {
     position: static;
   }
-  
+
   .confirmation-actions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .steps {
     grid-template-columns: 1fr;
   }
-  
+
   .header-actions {
     gap: 0.5rem;
   }
-  
+
   .user-menu {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .settings-container {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .settings-sidebar {
     position: static;
     order: 2;
   }
-  
+
   .settings-nav {
     flex-direction: row;
     overflow-x: auto;
     gap: 0.25rem;
   }
-  
+
   .nav-item {
     white-space: nowrap;
     min-width: fit-content;
     padding: 0.75rem 1rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .settings-content {
     padding: 1rem;
   }
-  
+
   .settings-page {
     padding: 1rem 0;
   }
@@ -1555,20 +1557,20 @@
   .settings-header h1 {
     font-size: 2rem;
   }
-  
+
   .nav-item {
     font-size: 0.875rem;
     padding: 0.5rem 0.75rem;
   }
-  
+
   .nav-icon {
     font-size: 1rem;
   }
-  
+
   .settings-section h2 {
     font-size: 1.5rem;
   }
-  
+
   .form-section h3 {
     font-size: 1.1rem;
   }

@@ -289,7 +289,8 @@
   font-weight: bold;
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 3rem;
   font-size: 1.1rem;
@@ -311,29 +312,29 @@
   .analytics {
     padding: 1rem;
   }
-  
+
   .analytics-header {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .header-content {
     justify-content: space-between;
   }
-  
+
   .analytics-header h1 {
     font-size: 2rem;
   }
-  
+
   .analytics-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .summary-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .chart-item,
   .product-item,
   .revenue-item {
@@ -341,7 +342,7 @@
     text-align: center;
     gap: 0.5rem;
   }
-  
+
   .product-item .rank {
     align-self: center;
   }

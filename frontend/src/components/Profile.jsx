@@ -1,50 +1,56 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import api from '../services/api'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import api from "../services/api";
 
 function Profile({ user }) {
-  const [activeTab, setActiveTab] = useState('profile')
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [userProfile, setUserProfile] = useState(user || {})
+  const [activeTab, setActiveTab] = useState("profile");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [userProfile, setUserProfile] = useState(user || {});
 
   useEffect(() => {
-    if (activeTab === 'orders') {
-      loadOrders()
+    if (activeTab === "orders") {
+      loadOrders();
     }
-  }, [activeTab])
+  }, [activeTab]);
 
   const loadOrders = async () => {
     try {
-      setLoading(true)
-      const orders = await api.orders.getMyOrders()
-      setOrders(orders || [])
+      setLoading(true);
+      const orders = await api.orders.getMyOrders();
+      setOrders(orders || []);
     } catch (error) {
-      console.error('Failed to load orders:', error)
+      console.error("Failed to load orders:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getStatusBadgeClass = (status) => {
-    if (!status) return 'status-default'
+    if (!status) return "status-default";
     switch (status.toLowerCase()) {
-      case 'pending': return 'status-pending'
-      case 'processing': return 'status-processing'
-      case 'shipped': return 'status-shipped'
-      case 'delivered': return 'status-delivered'
-      case 'cancelled': return 'status-cancelled'
-      default: return 'status-default'
+      case "pending":
+        return "status-pending";
+      case "processing":
+        return "status-processing";
+      case "shipped":
+        return "status-shipped";
+      case "delivered":
+        return "status-delivered";
+      case "cancelled":
+        return "status-cancelled";
+      default:
+        return "status-default";
     }
-  }
+  };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   if (!user) {
     return (
@@ -58,7 +64,7 @@ function Profile({ user }) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -70,29 +76,29 @@ function Profile({ user }) {
         </div>
 
         <div className="profile-tabs">
-          <button 
-            className={`tab ${activeTab === 'profile' ? 'active' : ''}`}
-            onClick={() => setActiveTab('profile')}
+          <button
+            className={`tab ${activeTab === "profile" ? "active" : ""}`}
+            onClick={() => setActiveTab("profile")}
           >
             Profile Information
           </button>
-          <button 
-            className={`tab ${activeTab === 'orders' ? 'active' : ''}`}
-            onClick={() => setActiveTab('orders')}
+          <button
+            className={`tab ${activeTab === "orders" ? "active" : ""}`}
+            onClick={() => setActiveTab("orders")}
           >
             Order History
           </button>
         </div>
 
         <div className="profile-content">
-          {activeTab === 'profile' && (
+          {activeTab === "profile" && (
             <div className="profile-info">
               <div className="info-card">
                 <h3>Personal Information</h3>
                 <div className="info-grid">
                   <div className="info-item">
                     <label>Name:</label>
-                    <span>{userProfile.name || 'Not provided'}</span>
+                    <span>{userProfile.name || "Not provided"}</span>
                   </div>
                   <div className="info-item">
                     <label>Email:</label>
@@ -101,36 +107,31 @@ function Profile({ user }) {
                   <div className="info-item">
                     <label>Role:</label>
                     <span className={`role-badge ${userProfile.role}`}>
-                      {userProfile.role || 'user'}
+                      {userProfile.role || "user"}
                     </span>
                   </div>
                   <div className="info-item">
                     <label>Member since:</label>
                     <span>
-                      {userProfile.createdAt 
+                      {userProfile.createdAt
                         ? formatDate(userProfile.createdAt)
-                        : 'Unknown'
-                      }
+                        : "Unknown"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="profile-actions">
-                  <button className="btn btn-primary">
-                    Edit Profile
-                  </button>
-                  <button className="btn btn-outline">
-                    Change Password
-                  </button>
+                  <button className="btn btn-primary">Edit Profile</button>
+                  <button className="btn btn-outline">Change Password</button>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'orders' && (
+          {activeTab === "orders" && (
             <div className="orders-section">
               <h3>Your Orders</h3>
-              
+
               {loading ? (
                 <div className="loading">
                   <div className="spinner"></div>
@@ -146,7 +147,7 @@ function Profile({ user }) {
                 </div>
               ) : (
                 <div className="orders-list">
-                  {orders.map(order => (
+                  {orders.map((order) => (
                     <div key={order._id} className="order-card">
                       <div className="order-header">
                         <div className="order-info">
@@ -156,8 +157,12 @@ function Profile({ user }) {
                           </p>
                         </div>
                         <div className="order-status">
-                          <span className={`status-badge ${getStatusBadgeClass(order.status)}`}>
-                            {order.status || 'Unknown'}
+                          <span
+                            className={`status-badge ${getStatusBadgeClass(
+                              order.status
+                            )}`}
+                          >
+                            {order.status || "Unknown"}
                           </span>
                         </div>
                       </div>
@@ -165,20 +170,24 @@ function Profile({ user }) {
                       <div className="order-items">
                         {order.items?.map((item, index) => (
                           <div key={index} className="order-item">
-                            <img 
-                              src={item.product?.images?.[0] || '/api/placeholder/60/60'} 
-                              alt={item.product?.name || 'Product'}
+                            <img
+                              src={
+                                item.product?.images?.[0] ||
+                                "/api/placeholder/60/60"
+                              }
+                              alt={item.product?.name || "Product"}
                               className="item-image"
                             />
                             <div className="item-details">
                               <span className="item-name">
-                                {item.product?.name || 'Product name unavailable'}
+                                {item.product?.name ||
+                                  "Product name unavailable"}
                               </span>
                               <span className="item-quantity">
                                 Qty: {item.quantity}
                               </span>
                               <span className="item-price">
-                                ${item.price?.toFixed(2) || '0.00'}
+                                ${item.price?.toFixed(2) || "0.00"}
                               </span>
                             </div>
                           </div>
@@ -187,16 +196,18 @@ function Profile({ user }) {
 
                       <div className="order-footer">
                         <div className="order-total">
-                          <strong>Total: ${order.totalAmount?.toFixed(2) || '0.00'}</strong>
+                          <strong>
+                            Total: ${order.totalAmount?.toFixed(2) || "0.00"}
+                          </strong>
                         </div>
                         <div className="order-actions">
-                          <Link 
-                            to={`/orders/${order._id}`} 
+                          <Link
+                            to={`/orders/${order._id}`}
                             className="btn btn-outline btn-small"
                           >
                             View Details
                           </Link>
-                          {order.status === 'delivered' && (
+                          {order.status === "delivered" && (
                             <button className="btn btn-primary btn-small">
                               Reorder
                             </button>
@@ -212,7 +223,7 @@ function Profile({ user }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

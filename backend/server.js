@@ -20,17 +20,17 @@ console.log('Attempting to connect to MongoDB...');
 console.log('MongoDB URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce');
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce')
-.then(() => {
-  console.log('MongoDB connected successfully');
-  console.log('Database name:', mongoose.connection.name);
-})
-.catch((err) => {
-  console.error('MongoDB connection error:', err.message);
-  if (err.code === 'ECONNREFUSED') {
-    console.error('Could not connect to MongoDB. Please ensure MongoDB is running on localhost:27017');
-    console.log('Server will continue running with mock data fallback');
-  }
-});
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    console.log('Database name:', mongoose.connection.name);
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err.message);
+    if (err.code === 'ECONNREFUSED') {
+      console.error('Could not connect to MongoDB. Please ensure MongoDB is running on localhost:27017');
+      console.log('Server will continue running with mock data fallback');
+    }
+  });
 
 // Routes
 app.get('/', (req, res) => {
@@ -49,7 +49,7 @@ app.use((err, req, res, next) => {
   console.error('Method:', req.method);
   console.error('Error stack:', err.stack);
   console.error('Error message:', err.message);
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : 'Internal Server Error'
   });

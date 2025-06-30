@@ -62,14 +62,14 @@ router.post('/', auth, async (req, res) => {
     // Validate and calculate total
     for (const item of items) {
       const product = await Product.findById(item.product);
-      
+
       if (!product || !product.isActive) {
         return res.status(400).json({ message: `Product ${item.product} not found` });
       }
 
       if (product.stock < item.quantity) {
-        return res.status(400).json({ 
-          message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
+        return res.status(400).json({
+          message: `Insufficient stock for ${product.name}. Available: ${product.stock}`
         });
       }
 
@@ -113,10 +113,10 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id/status', adminAuth, async (req, res) => {
   try {
     const { orderStatus, trackingNumber } = req.body;
-    
+
     const order = await Order.findByIdAndUpdate(
       req.params.id,
-      { 
+      {
         orderStatus,
         ...(trackingNumber && { trackingNumber }),
         ...(orderStatus === 'delivered' && { deliveredAt: new Date() })
@@ -181,7 +181,7 @@ router.put('/:id/cancel', auth, async (req, res) => {
 router.get('/', adminAuth, async (req, res) => {
   try {
     const { page = 1, limit = 10, status } = req.query;
-    
+
     const query = {};
     if (status) query.orderStatus = status;
 
@@ -224,12 +224,12 @@ router.get('/admin/stats', adminAuth, async (req, res) => {
     const totalOrders = await Order.countDocuments();
     const pendingOrders = await Order.countDocuments({ status: 'pending' });
     const completedOrders = await Order.countDocuments({ status: 'delivered' });
-    
+
     const revenueResult = await Order.aggregate([
       { $match: { status: { $ne: 'cancelled' } } },
       { $group: { _id: null, total: { $sum: '$totalAmount' } } }
     ]);
-    
+
     const revenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
 
     res.json({
@@ -247,7 +247,7 @@ router.put('/admin/:id/status', adminAuth, async (req, res) => {
   try {
     const { status } = req.body;
     const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-    
+
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
@@ -257,7 +257,7 @@ router.put('/admin/:id/status', adminAuth, async (req, res) => {
       { status },
       { new: true }
     ).populate('user', 'name email')
-     .populate('items.product', 'name images');
+      .populate('items.product', 'name images');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
@@ -273,7 +273,7 @@ router.put('/admin/:id/status', adminAuth, async (req, res) => {
 router.get('/admin/analytics', adminAuth, async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    
+
     const dateFilter = {};
     if (startDate && endDate) {
       dateFilter.createdAt = {
@@ -472,7 +472,7 @@ router.get('/admin/analytics/revenue', adminAuth, async (req, res) => {
 router.get('/admin/reports/export', adminAuth, async (req, res) => {
   try {
     const { type, startDate, endDate } = req.query;
-    
+
     const dateFilter = {};
     if (startDate && endDate) {
       dateFilter.createdAt = {
@@ -482,7 +482,7 @@ router.get('/admin/reports/export', adminAuth, async (req, res) => {
     }
 
     let data = [];
-    
+
     switch (type) {
       case 'orders':
         data = await Order.find(dateFilter)
@@ -512,7 +512,7 @@ router.get('/admin/reports/export', adminAuth, async (req, res) => {
 router.get('/admin/recent', adminAuth, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
-    
+
     const recentOrders = await Order.find()
       .populate('user', 'name email')
       .sort({ createdAt: -1 })

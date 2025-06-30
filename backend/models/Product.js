@@ -120,7 +120,7 @@ productSchema.index({
 });
 
 // Virtual for discount percentage
-productSchema.virtual('discountPercentage').get(function() {
+productSchema.virtual('discountPercentage').get(function () {
   if (this.discountPrice && this.price > this.discountPrice) {
     return Math.round(((this.price - this.discountPrice) / this.price) * 100);
   }

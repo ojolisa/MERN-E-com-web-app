@@ -1,51 +1,51 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useCart } from '../contexts/CartContext'
-import api from '../services/api'
-import './Auth.css'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+import api from "../services/api";
+import "./Auth.css";
 
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
-  const { syncCartWithBackend } = useCart()
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { syncCartWithBackend } = useCart();
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const response = await api.auth.login(formData)
-      
+      const response = await api.auth.login(formData);
+
       // Save token
-      api.token.save(response.token)
-      
+      api.token.save(response.token);
+
       // Sync cart with backend after successful login
-      await syncCartWithBackend()
-      
+      await syncCartWithBackend();
+
       // Call parent callback with user data
-      onLogin(response.user)
-      
+      onLogin(response.user);
+
       // Navigate to home
-      navigate('/')
+      navigate("/");
     } catch (error) {
-      setError(error.message || 'Login failed')
+      setError(error.message || "Login failed");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="auth-container">
@@ -55,11 +55,7 @@ function Login({ onLogin }) {
           <p>Sign in to your account</p>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
@@ -90,18 +86,18 @@ function Login({ onLogin }) {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary btn-full"
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link to="/signup" className="auth-link">
               Sign up here
             </Link>
@@ -109,7 +105,7 @@ function Login({ onLogin }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

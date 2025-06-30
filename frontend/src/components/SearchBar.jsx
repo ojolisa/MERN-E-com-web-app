@@ -1,17 +1,17 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 function SearchBar({ onSearch, placeholder = "Search..." }) {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    onSearch(searchTerm.trim())
-  }
+    e.preventDefault();
+    onSearch(searchTerm.trim());
+  };
 
   const handleClear = () => {
-    setSearchTerm('')
-    onSearch('')
-  }
+    setSearchTerm("");
+    onSearch("");
+  };
 
   return (
     <form onSubmit={handleSubmit} className="search-bar">
@@ -37,7 +37,7 @@ function SearchBar({ onSearch, placeholder = "Search..." }) {
         </button>
       </div>
     </form>
-  )
+  );
 }
 
-export default SearchBar
+export default SearchBar;

@@ -1,76 +1,76 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import api from '../services/api'
-import ProductCard from './ProductCard'
-import SearchBar from './SearchBar'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import api from "../services/api";
+import ProductCard from "./ProductCard";
+import SearchBar from "./SearchBar";
 
 function Products() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
-    category: '',
-    sortBy: 'name',
-    sortOrder: 'asc',
-    search: ''
-  })
+    category: "",
+    sortBy: "name",
+    sortOrder: "asc",
+    search: "",
+  });
 
   const categories = [
-    'Electronics',
-    'Clothing',
-    'Books',
-    'Home & Garden',
-    'Sports',
-    'Beauty',
-    'Toys',
-    'Food',
-    'Other'
-  ]
+    "Electronics",
+    "Clothing",
+    "Books",
+    "Home & Garden",
+    "Sports",
+    "Beauty",
+    "Toys",
+    "Food",
+    "Other",
+  ];
 
   useEffect(() => {
-    loadProducts()
-  }, [currentPage, filters])
+    loadProducts();
+  }, [currentPage, filters]);
 
   const loadProducts = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const params = {
         page: currentPage,
         limit: 12,
-        ...filters
-      }
-      
-      // Remove empty filters
-      Object.keys(params).forEach(key => {
-        if (params[key] === '') {
-          delete params[key]
-        }
-      })
+        ...filters,
+      };
 
-      const response = await api.products.getAll(params)
-      setProducts(response.products || [])
-      setTotalPages(response.pagination?.totalPages || 1)
+      // Remove empty filters
+      Object.keys(params).forEach((key) => {
+        if (params[key] === "") {
+          delete params[key];
+        }
+      });
+
+      const response = await api.products.getAll(params);
+      setProducts(response.products || []);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
-      console.error('Failed to load products:', error)
+      console.error("Failed to load products:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleFilterChange = (newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }))
-    setCurrentPage(1) // Reset to first page when filters change
-  }
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
 
   const handleSearch = (searchTerm) => {
-    handleFilterChange({ search: searchTerm })
-  }
+    handleFilterChange({ search: searchTerm });
+  };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="products-page">
@@ -83,19 +83,23 @@ function Products() {
         {/* Search and Filters */}
         <div className="products-controls">
           <SearchBar onSearch={handleSearch} placeholder="Search products..." />
-          
+
           <div className="filters">
             <div className="filter-group">
               <label htmlFor="category">Category:</label>
               <select
                 id="category"
                 value={filters.category}
-                onChange={(e) => handleFilterChange({ category: e.target.value })}
+                onChange={(e) =>
+                  handleFilterChange({ category: e.target.value })
+                }
                 className="form-select"
               >
                 <option value="">All Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
                 ))}
               </select>
             </div>
@@ -106,8 +110,8 @@ function Products() {
                 id="sortBy"
                 value={`${filters.sortBy}-${filters.sortOrder}`}
                 onChange={(e) => {
-                  const [sortBy, sortOrder] = e.target.value.split('-')
-                  handleFilterChange({ sortBy, sortOrder })
+                  const [sortBy, sortOrder] = e.target.value.split("-");
+                  handleFilterChange({ sortBy, sortOrder });
                 }}
                 className="form-select"
               >
@@ -136,7 +140,7 @@ function Products() {
         ) : (
           <>
             <div className="products-grid">
-              {products.map(product => (
+              {products.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
@@ -151,19 +155,21 @@ function Products() {
                 >
                   Previous
                 </button>
-                
+
                 <div className="page-numbers">
                   {[...Array(totalPages)].map((_, index) => {
-                    const page = index + 1
+                    const page = index + 1;
                     return (
                       <button
                         key={page}
                         onClick={() => handlePageChange(page)}
-                        className={`btn ${currentPage === page ? 'btn-primary' : 'btn-secondary'}`}
+                        className={`btn ${
+                          currentPage === page ? "btn-primary" : "btn-secondary"
+                        }`}
                       >
                         {page}
                       </button>
-                    )
+                    );
                   })}
                 </div>
 
@@ -180,7 +186,7 @@ function Products() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default Products
+export default Products;

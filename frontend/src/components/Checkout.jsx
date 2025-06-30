@@ -1,82 +1,81 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useCart } from '../contexts/CartContext'
-import api from '../services/api'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../contexts/CartContext";
+import api from "../services/api";
 
 function Checkout() {
-  const { cartItems, getTotalPrice, clearCart } = useCart()
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
+  const { cartItems, getTotalPrice, clearCart } = useCart();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     shippingAddress: {
-      fullName: '',
-      street: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: 'US'
+      fullName: "",
+      street: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      country: "US",
     },
-    paymentMethod: 'credit_card',
+    paymentMethod: "credit_card",
     cardInfo: {
-      cardNumber: '',
-      expiryDate: '',
-      cvv: '',
-      cardholderName: ''
-    }
-  })
+      cardNumber: "",
+      expiryDate: "",
+      cvv: "",
+      cardholderName: "",
+    },
+  });
 
-  const subtotal = getTotalPrice()
-  const tax = subtotal * 0.08
-  const shipping = 0 // Free shipping
-  const total = subtotal + tax + shipping
+  const subtotal = getTotalPrice();
+  const tax = subtotal * 0.08;
+  const shipping = 0; // Free shipping
+  const total = subtotal + tax + shipping;
 
   const handleInputChange = (section, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: value
-      }
-    }))
-  }
+        [field]: value,
+      },
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (cartItems.length === 0) {
-      alert('Your cart is empty')
-      return
+      alert("Your cart is empty");
+      return;
     }
 
-    setLoading(true)
-    
+    setLoading(true);
+
     try {
       // Prepare order data
       const orderData = {
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
-          price: item.product.discountPrice || item.product.price
+          price: item.product.discountPrice || item.product.price,
         })),
         totalAmount: total,
         shippingAddress: formData.shippingAddress,
-        paymentMethod: formData.paymentMethod
-      }
+        paymentMethod: formData.paymentMethod,
+      };
 
       // Create order
-      const response = await api.orders.create(orderData)
-      
+      const response = await api.orders.create(orderData);
+
       // Clear cart and redirect to success page
-      clearCart()
-      navigate(`/order-confirmation/${response.order._id}`)
-      
+      clearCart();
+      navigate(`/order-confirmation/${response.order._id}`);
     } catch (error) {
-      console.error('Order creation failed:', error)
-      alert('Failed to place order. Please try again.')
+      console.error("Order creation failed:", error);
+      alert("Failed to place order. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -85,8 +84,8 @@ function Checkout() {
           <div className="empty-cart">
             <h2>Your cart is empty</h2>
             <p>Add some products before proceeding to checkout</p>
-            <button 
-              onClick={() => navigate('/products')} 
+            <button
+              onClick={() => navigate("/products")}
               className="btn btn-primary"
             >
               Continue Shopping
@@ -94,14 +93,14 @@ function Checkout() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="checkout-page">
       <div className="container">
         <h1>Checkout</h1>
-        
+
         <form onSubmit={handleSubmit} className="checkout-form">
           <div className="checkout-content">
             <div className="checkout-main">
@@ -116,11 +115,17 @@ function Checkout() {
                       id="fullName"
                       required
                       value={formData.shippingAddress.fullName}
-                      onChange={(e) => handleInputChange('shippingAddress', 'fullName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "fullName",
+                          e.target.value
+                        )
+                      }
                       className="form-input"
                     />
                   </div>
-                  
+
                   <div className="form-group full-width">
                     <label htmlFor="street">Street Address *</label>
                     <input
@@ -128,11 +133,17 @@ function Checkout() {
                       id="street"
                       required
                       value={formData.shippingAddress.street}
-                      onChange={(e) => handleInputChange('shippingAddress', 'street', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "street",
+                          e.target.value
+                        )
+                      }
                       className="form-input"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="city">City *</label>
                     <input
@@ -140,11 +151,17 @@ function Checkout() {
                       id="city"
                       required
                       value={formData.shippingAddress.city}
-                      onChange={(e) => handleInputChange('shippingAddress', 'city', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "city",
+                          e.target.value
+                        )
+                      }
                       className="form-input"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="state">State *</label>
                     <input
@@ -152,11 +169,17 @@ function Checkout() {
                       id="state"
                       required
                       value={formData.shippingAddress.state}
-                      onChange={(e) => handleInputChange('shippingAddress', 'state', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "state",
+                          e.target.value
+                        )
+                      }
                       className="form-input"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="zipCode">ZIP Code *</label>
                     <input
@@ -164,18 +187,30 @@ function Checkout() {
                       id="zipCode"
                       required
                       value={formData.shippingAddress.zipCode}
-                      onChange={(e) => handleInputChange('shippingAddress', 'zipCode', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "zipCode",
+                          e.target.value
+                        )
+                      }
                       className="form-input"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="country">Country *</label>
                     <select
                       id="country"
                       required
                       value={formData.shippingAddress.country}
-                      onChange={(e) => handleInputChange('shippingAddress', 'country', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "shippingAddress",
+                          "country",
+                          e.target.value
+                        )
+                      }
                       className="form-select"
                     >
                       <option value="US">United States</option>
@@ -189,32 +224,42 @@ function Checkout() {
               {/* Payment Information */}
               <div className="checkout-section">
                 <h2>Payment Information</h2>
-                
+
                 <div className="payment-methods">
                   <label className="payment-method">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="credit_card"
-                      checked={formData.paymentMethod === 'credit_card'}
-                      onChange={(e) => setFormData(prev => ({ ...prev, paymentMethod: e.target.value }))}
+                      checked={formData.paymentMethod === "credit_card"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          paymentMethod: e.target.value,
+                        }))
+                      }
                     />
                     <span>Credit Card</span>
                   </label>
-                  
+
                   <label className="payment-method">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="paypal"
-                      checked={formData.paymentMethod === 'paypal'}
-                      onChange={(e) => setFormData(prev => ({ ...prev, paymentMethod: e.target.value }))}
+                      checked={formData.paymentMethod === "paypal"}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          paymentMethod: e.target.value,
+                        }))
+                      }
                     />
                     <span>PayPal</span>
                   </label>
                 </div>
 
-                {formData.paymentMethod === 'credit_card' && (
+                {formData.paymentMethod === "credit_card" && (
                   <div className="form-grid">
                     <div className="form-group">
                       <label htmlFor="cardholderName">Cardholder Name *</label>
@@ -223,11 +268,17 @@ function Checkout() {
                         id="cardholderName"
                         required
                         value={formData.cardInfo.cardholderName}
-                        onChange={(e) => handleInputChange('cardInfo', 'cardholderName', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "cardInfo",
+                            "cardholderName",
+                            e.target.value
+                          )
+                        }
                         className="form-input"
                       />
                     </div>
-                    
+
                     <div className="form-group full-width">
                       <label htmlFor="cardNumber">Card Number *</label>
                       <input
@@ -236,11 +287,17 @@ function Checkout() {
                         required
                         placeholder="1234 5678 9012 3456"
                         value={formData.cardInfo.cardNumber}
-                        onChange={(e) => handleInputChange('cardInfo', 'cardNumber', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "cardInfo",
+                            "cardNumber",
+                            e.target.value
+                          )
+                        }
                         className="form-input"
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="expiryDate">Expiry Date *</label>
                       <input
@@ -249,11 +306,17 @@ function Checkout() {
                         required
                         placeholder="MM/YY"
                         value={formData.cardInfo.expiryDate}
-                        onChange={(e) => handleInputChange('cardInfo', 'expiryDate', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "cardInfo",
+                            "expiryDate",
+                            e.target.value
+                          )
+                        }
                         className="form-input"
                       />
                     </div>
-                    
+
                     <div className="form-group">
                       <label htmlFor="cvv">CVV *</label>
                       <input
@@ -262,7 +325,9 @@ function Checkout() {
                         required
                         placeholder="123"
                         value={formData.cardInfo.cvv}
-                        onChange={(e) => handleInputChange('cardInfo', 'cvv', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("cardInfo", "cvv", e.target.value)
+                        }
                         className="form-input"
                       />
                     </div>
@@ -275,21 +340,29 @@ function Checkout() {
             <div className="checkout-sidebar">
               <div className="order-summary">
                 <h3>Order Summary</h3>
-                
+
                 <div className="order-items">
-                  {cartItems.map(item => (
+                  {cartItems.map((item) => (
                     <div key={item.product._id} className="order-item">
-                      <img 
-                        src={item.product.images?.[0] || '/api/placeholder/60/60'} 
+                      <img
+                        src={
+                          item.product.images?.[0] || "/api/placeholder/60/60"
+                        }
                         alt={item.product.name}
                         className="item-image"
                       />
                       <div className="item-details">
                         <span className="item-name">{item.product.name}</span>
-                        <span className="item-quantity">Qty: {item.quantity}</span>
+                        <span className="item-quantity">
+                          Qty: {item.quantity}
+                        </span>
                       </div>
                       <span className="item-price">
-                        ${((item.product.discountPrice || item.product.price) * item.quantity).toFixed(2)}
+                        $
+                        {(
+                          (item.product.discountPrice || item.product.price) *
+                          item.quantity
+                        ).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -314,12 +387,12 @@ function Checkout() {
                   </div>
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={loading}
                   className="btn btn-primary btn-large place-order-btn"
                 >
-                  {loading ? 'Processing...' : 'Place Order'}
+                  {loading ? "Processing..." : "Place Order"}
                 </button>
               </div>
             </div>
@@ -327,7 +400,7 @@ function Checkout() {
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default Checkout
+export default Checkout;

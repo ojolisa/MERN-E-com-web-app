@@ -1,5 +1,5 @@
 /* Import component styles */
-@import './components/Components.css';
+@import "./components/Components.css";
 
 /* Reset and base styles */
 * {
@@ -351,8 +351,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .no-products {
@@ -466,7 +470,7 @@
     flex-direction: row;
     gap: 0.5rem;
   }
-  
+
   .admin-link {
     position: relative;
     opacity: 1;
@@ -476,12 +480,12 @@
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
   }
-  
+
   .user-menu {
     flex-wrap: wrap;
     gap: 8px;
   }
-  
+
   .welcome {
     order: -1;
     width: 100%;

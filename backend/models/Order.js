@@ -91,7 +91,7 @@ const orderSchema = new mongoose.Schema({
 });
 
 // Calculate total with shipping and tax
-orderSchema.virtual('finalTotal').get(function() {
+orderSchema.virtual('finalTotal').get(function () {
   return this.totalAmount + this.shippingCost + this.tax - this.discount;
 });
 

@@ -294,7 +294,8 @@
   color: #155724;
 }
 
-.loading, .error {
+.loading,
+.error {
   text-align: center;
   padding: 2rem;
   font-size: 1.1rem;
@@ -316,24 +317,24 @@
   .admin-dashboard {
     padding: 1rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .action-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .dashboard-header h1 {
     font-size: 2rem;
   }
-  
+
   .stat-card {
     padding: 1rem;
   }
-  
+
   .stat-number {
     font-size: 1.5rem;
   }

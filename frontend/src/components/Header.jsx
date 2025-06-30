@@ -1,21 +1,21 @@
-import { Link, useNavigate } from 'react-router-dom'
-import api from '../services/api'
-import { useCart } from '../contexts/CartContext'
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useCart } from "../contexts/CartContext";
 
 function Header({ user, onLogout }) {
-  const navigate = useNavigate()
-  const { getTotalItems, clearCartOnLogout } = useCart()
+  const navigate = useNavigate();
+  const { getTotalItems, clearCartOnLogout } = useCart();
 
   const handleLogout = async () => {
     try {
-      await api.auth.logout()
-      clearCartOnLogout()
-      onLogout()
-      navigate('/')
+      await api.auth.logout();
+      clearCartOnLogout();
+      onLogout();
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error("Logout error:", error);
     }
-  }
+  };
 
   return (
     <header className="header">
@@ -48,7 +48,7 @@ function Header({ user, onLogout }) {
                     <Link to="/settings" className="profile-link">
                       Settings
                     </Link>
-                    {user.role === 'admin' && (
+                    {user.role === "admin" && (
                       <Link to="/admin/dashboard" className="admin-link">
                         Admin Dashboard
                       </Link>
@@ -74,7 +74,7 @@ function Header({ user, onLogout }) {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;

@@ -134,9 +134,9 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-  
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -147,46 +147,46 @@ userSchema.pre('save', async function(next) {
 });
 
 // Compare password method
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Update last login and increment login count
-userSchema.methods.updateLoginInfo = async function() {
+userSchema.methods.updateLoginInfo = async function () {
   this.lastLogin = new Date();
   this.loginCount += 1;
   return this.save();
 };
 
 // Add item to cart
-userSchema.methods.addToCart = async function(productId, quantity = 1) {
-  const existingItem = this.cart.find(item => 
+userSchema.methods.addToCart = async function (productId, quantity = 1) {
+  const existingItem = this.cart.find(item =>
     item.productId.toString() === productId.toString()
   );
-  
+
   if (existingItem) {
     existingItem.quantity += quantity;
   } else {
     this.cart.push({ productId, quantity });
   }
-  
+
   return this.save();
 };
 
 // Remove item from cart
-userSchema.methods.removeFromCart = async function(productId) {
-  this.cart = this.cart.filter(item => 
+userSchema.methods.removeFromCart = async function (productId) {
+  this.cart = this.cart.filter(item =>
     item.productId.toString() !== productId.toString()
   );
   return this.save();
 };
 
 // Update cart item quantity
-userSchema.methods.updateCartQuantity = async function(productId, quantity) {
-  const item = this.cart.find(item => 
+userSchema.methods.updateCartQuantity = async function (productId, quantity) {
+  const item = this.cart.find(item =>
     item.productId.toString() === productId.toString()
   );
-  
+
   if (item) {
     item.quantity = quantity;
     return this.save();
@@ -195,35 +195,35 @@ userSchema.methods.updateCartQuantity = async function(productId, quantity) {
 };
 
 // Clear cart
-userSchema.methods.clearCart = async function() {
+userSchema.methods.clearCart = async function () {
   this.cart = [];
   return this.save();
 };
 
 // Add to recently viewed
-userSchema.methods.addToRecentlyViewed = async function(productId) {
+userSchema.methods.addToRecentlyViewed = async function (productId) {
   // Remove if already exists
-  this.recentlyViewed = this.recentlyViewed.filter(item => 
+  this.recentlyViewed = this.recentlyViewed.filter(item =>
     item.productId.toString() !== productId.toString()
   );
-  
+
   // Add to beginning
   this.recentlyViewed.unshift({ productId });
-  
+
   // Keep only last 20 items
   if (this.recentlyViewed.length > 20) {
     this.recentlyViewed = this.recentlyViewed.slice(0, 20);
   }
-  
+
   return this.save();
 };
 
 // Add to saved items
-userSchema.methods.saveItem = async function(productId) {
-  const existingItem = this.savedItems.find(item => 
+userSchema.methods.saveItem = async function (productId) {
+  const existingItem = this.savedItems.find(item =>
     item.productId.toString() === productId.toString()
   );
-  
+
   if (!existingItem) {
     this.savedItems.push({ productId });
     return this.save();
@@ -232,39 +232,39 @@ userSchema.methods.saveItem = async function(productId) {
 };
 
 // Remove from saved items
-userSchema.methods.unsaveItem = async function(productId) {
-  this.savedItems = this.savedItems.filter(item => 
+userSchema.methods.unsaveItem = async function (productId) {
+  this.savedItems = this.savedItems.filter(item =>
     item.productId.toString() !== productId.toString()
   );
   return this.save();
 };
 
 // Update user preferences
-userSchema.methods.updatePreferences = async function(preferences) {
+userSchema.methods.updatePreferences = async function (preferences) {
   this.preferences = { ...this.preferences.toObject(), ...preferences };
   return this.save();
 };
 
 // Add to search history
-userSchema.methods.addToSearchHistory = async function(query) {
+userSchema.methods.addToSearchHistory = async function (query) {
   // Remove if already exists
-  this.searchHistory = this.searchHistory.filter(item => 
+  this.searchHistory = this.searchHistory.filter(item =>
     item.query !== query
   );
-  
+
   // Add to beginning
   this.searchHistory.unshift({ query });
-  
+
   // Keep only last 10 searches
   if (this.searchHistory.length > 10) {
     this.searchHistory = this.searchHistory.slice(0, 10);
   }
-  
+
   return this.save();
 };
 
 // Remove password from JSON output
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   return user;

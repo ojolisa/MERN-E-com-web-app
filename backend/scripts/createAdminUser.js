@@ -51,7 +51,7 @@ const createAdminUser = async () => {
       console.log(`Admin user with email ${adminData.email} already exists!`);
       console.log(`User ID: ${existingAdmin._id}`);
       console.log(`Role: ${existingAdmin.role}`);
-      
+
       // Update existing user to admin role if needed
       if (existingAdmin.role !== 'admin') {
         existingAdmin.role = 'admin';
@@ -62,7 +62,7 @@ const createAdminUser = async () => {
       // Create new admin user
       const adminUser = new User(adminData);
       await adminUser.save();
-      
+
       console.log('Admin user created successfully!');
       console.log(`Email: ${adminUser.email}`);
       console.log(`Password: ${adminData.password}`);

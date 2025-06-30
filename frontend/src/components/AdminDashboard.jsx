@@ -1,115 +1,127 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import api from '../services/api'
-import './AdminDashboard.css'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+import "./AdminDashboard.css";
 
 function AdminDashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     users: { total: 0, admin: 0, regular: 0 },
     products: { total: 0, active: 0, lowStock: 0 },
-    orders: { total: 0, pending: 0, completed: 0, revenue: 0 }
-  })
-  const [recentActivity, setRecentActivity] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+    orders: { total: 0, pending: 0, completed: 0, revenue: 0 },
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDashboardStats()
-    fetchRecentActivity()
-  }, [])
+    fetchDashboardStats();
+    fetchRecentActivity();
+  }, []);
 
   const fetchDashboardStats = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      
+      setLoading(true);
+      setError(null);
+
       // Fetch all stats in parallel with fallbacks
       const [userStats, productStats, orderStats] = await Promise.all([
-        api.auth.getUserStats().catch(() => ({ 
-          totalUsers: 0, adminUsers: 0, regularUsers: 0, activeUsers: 0 
+        api.auth.getUserStats().catch(() => ({
+          totalUsers: 0,
+          adminUsers: 0,
+          regularUsers: 0,
+          activeUsers: 0,
         })),
-        api.products.getStats().catch(() => ({ 
-          total: 0, active: 0, lowStock: 0 
+        api.products.getStats().catch(() => ({
+          total: 0,
+          active: 0,
+          lowStock: 0,
         })),
-        api.orders.getStats().catch(() => ({ 
-          total: 0, pending: 0, completed: 0, revenue: 0 
-        }))
-      ])
+        api.orders.getStats().catch(() => ({
+          total: 0,
+          pending: 0,
+          completed: 0,
+          revenue: 0,
+        })),
+      ]);
 
       setStats({
         users: {
           total: userStats.totalUsers || 0,
           admin: userStats.adminUsers || 0,
           regular: userStats.regularUsers || 0,
-          active: userStats.activeUsers || 0
+          active: userStats.activeUsers || 0,
         },
         products: productStats,
-        orders: orderStats
-      })
+        orders: orderStats,
+      });
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error)
-      setError('Failed to load some dashboard data')
+      console.error("Error fetching dashboard stats:", error);
+      setError("Failed to load some dashboard data");
       if (error.response?.status === 403) {
-        navigate('/login')
+        navigate("/login");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchRecentActivity = async () => {
     try {
       // Get recent orders and users to show activity
       const [recentOrders, recentUsers] = await Promise.all([
         api.orders.getRecent({ limit: 5 }).catch(() => []),
-        api.auth.getAllUsers({ limit: 5, sort: '-createdAt' }).catch(() => ({ users: [] }))
-      ])
+        api.auth
+          .getAllUsers({ limit: 5, sort: "-createdAt" })
+          .catch(() => ({ users: [] })),
+      ]);
 
-      const activities = []
-      
+      const activities = [];
+
       // Add recent orders
       if (recentOrders && Array.isArray(recentOrders)) {
-        recentOrders.forEach(order => {
+        recentOrders.forEach((order) => {
           activities.push({
             id: `order-${order._id}`,
-            type: 'order',
-            message: `New order #${order._id.slice(-6)} for $${order.totalAmount?.toFixed(2) || '0.00'}`,
+            type: "order",
+            message: `New order #${order._id.slice(-6)} for $${
+              order.totalAmount?.toFixed(2) || "0.00"
+            }`,
             time: order.createdAt,
-            status: order.status
-          })
-        })
+            status: order.status,
+          });
+        });
       }
 
       // Add recent users
       if (recentUsers.users && Array.isArray(recentUsers.users)) {
-        recentUsers.users.forEach(user => {
+        recentUsers.users.forEach((user) => {
           activities.push({
             id: `user-${user._id}`,
-            type: 'user',
+            type: "user",
             message: `New user registered: ${user.name}`,
             time: user.createdAt,
-            status: 'active'
-          })
-        })
+            status: "active",
+          });
+        });
       }
 
       // Sort by time and take the most recent 8
-      activities.sort((a, b) => new Date(b.time) - new Date(a.time))
-      setRecentActivity(activities.slice(0, 8))
+      activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+      setRecentActivity(activities.slice(0, 8));
     } catch (error) {
-      console.error('Error fetching recent activity:', error)
+      console.error("Error fetching recent activity:", error);
       // Set some fallback activity if API fails
-      setRecentActivity([])
+      setRecentActivity([]);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="admin-dashboard">
         <div className="loading">Loading dashboard...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -117,7 +129,7 @@ function AdminDashboard() {
       <div className="admin-dashboard">
         <div className="error">{error}</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -125,11 +137,11 @@ function AdminDashboard() {
       <div className="dashboard-header">
         <h1>Admin Dashboard</h1>
         <p>Welcome to the admin control panel</p>
-        <button 
+        <button
           className="refresh-btn"
           onClick={() => {
-            fetchDashboardStats()
-            fetchRecentActivity()
+            fetchDashboardStats();
+            fetchRecentActivity();
           }}
           disabled={loading}
         >
@@ -178,7 +190,9 @@ function AdminDashboard() {
           <div className="stat-icon">💰</div>
           <div className="stat-content">
             <h3>Revenue</h3>
-            <div className="stat-number">${stats.orders.revenue?.toLocaleString() || 0}</div>
+            <div className="stat-number">
+              ${stats.orders.revenue?.toLocaleString() || 0}
+            </div>
             <div className="stat-details">
               <span>Total revenue</span>
             </div>
@@ -189,33 +203,33 @@ function AdminDashboard() {
       <div className="admin-actions">
         <h2>Quick Actions</h2>
         <div className="action-grid">
-          <button 
+          <button
             className="action-btn users-btn"
-            onClick={() => navigate('/admin/users')}
+            onClick={() => navigate("/admin/users")}
           >
             <span className="action-icon">👥</span>
             <span>Manage Users</span>
           </button>
-          
-          <button 
+
+          <button
             className="action-btn products-btn"
-            onClick={() => navigate('/admin/products')}
+            onClick={() => navigate("/admin/products")}
           >
             <span className="action-icon">📦</span>
             <span>Manage Products</span>
           </button>
-          
-          <button 
+
+          <button
             className="action-btn orders-btn"
-            onClick={() => navigate('/admin/orders')}
+            onClick={() => navigate("/admin/orders")}
           >
             <span className="action-icon">🛒</span>
             <span>Manage Orders</span>
           </button>
-          
-          <button 
+
+          <button
             className="action-btn analytics-btn"
-            onClick={() => navigate('/admin/analytics')}
+            onClick={() => navigate("/admin/analytics")}
           >
             <span className="action-icon">📊</span>
             <span>View Analytics</span>
@@ -228,15 +242,21 @@ function AdminDashboard() {
         {recentActivity.length > 0 ? (
           <div className="activity-list">
             {recentActivity.map((activity) => (
-              <div key={activity.id} className={`activity-item ${activity.type}`}>
+              <div
+                key={activity.id}
+                className={`activity-item ${activity.type}`}
+              >
                 <div className="activity-icon">
-                  {activity.type === 'order' ? '🛒' : '👤'}
+                  {activity.type === "order" ? "🛒" : "👤"}
                 </div>
                 <div className="activity-content">
                   <p className="activity-message">{activity.message}</p>
                   <span className="activity-time">
-                    {new Date(activity.time).toLocaleDateString()} at{' '}
-                    {new Date(activity.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(activity.time).toLocaleDateString()} at{" "}
+                    {new Date(activity.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
                 <div className={`activity-status ${activity.status}`}>
@@ -252,7 +272,7 @@ function AdminDashboard() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

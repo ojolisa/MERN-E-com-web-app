@@ -39,53 +39,53 @@ const apiRequest = async (endpoint, options = {}) => {
 // Generic HTTP methods
 const httpMethods = {
   get: (endpoint) => apiRequest(endpoint, { method: 'GET' }),
-  post: (endpoint, data) => apiRequest(endpoint, { 
-    method: 'POST', 
-    body: JSON.stringify(data) 
+  post: (endpoint, data) => apiRequest(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data)
   }),
-  put: (endpoint, data) => apiRequest(endpoint, { 
-    method: 'PUT', 
-    body: JSON.stringify(data) 
+  put: (endpoint, data) => apiRequest(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data)
   }),
   delete: (endpoint) => apiRequest(endpoint, { method: 'DELETE' }),
 };
 
 // Auth API
 export const authAPI = {
-  register: (userData) => 
+  register: (userData) =>
     apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     }),
 
-  login: (credentials) => 
+  login: (credentials) =>
     apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     }),
 
-  getProfile: () => 
+  getProfile: () =>
     apiRequest('/auth/me'),
 
-  updateProfile: (userData) => 
+  updateProfile: (userData) =>
     apiRequest('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(userData),
     }),
 
-  changePassword: (passwordData) => 
+  changePassword: (passwordData) =>
     apiRequest('/auth/change-password', {
       method: 'PUT',
       body: JSON.stringify(passwordData),
     }),
 
-  updatePreferences: (preferences) => 
+  updatePreferences: (preferences) =>
     apiRequest('/auth/preferences', {
       method: 'PUT',
       body: JSON.stringify(preferences),
     }),
 
-  deleteAccount: () => 
+  deleteAccount: () =>
     apiRequest('/auth/delete-account', {
       method: 'DELETE',
     }),
@@ -101,10 +101,10 @@ export const authAPI = {
     return apiRequest(`/auth/admin/users${queryString ? `?${queryString}` : ''}`);
   },
 
-  getUserStats: () => 
+  getUserStats: () =>
     apiRequest('/auth/admin/users/stats'),
 
-  getUserAnalytics: () => 
+  getUserAnalytics: () =>
     apiRequest('/auth/admin/analytics/users'),
 };
 
@@ -115,58 +115,58 @@ export const productsAPI = {
     return apiRequest(`/products${queryString ? `?${queryString}` : ''}`);
   },
 
-  getById: (id) => 
+  getById: (id) =>
     apiRequest(`/products/${id}`),
 
-  create: (productData) => 
+  create: (productData) =>
     apiRequest('/products', {
       method: 'POST',
       body: JSON.stringify(productData),
     }),
 
-  update: (id, productData) => 
+  update: (id, productData) =>
     apiRequest(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(productData),
     }),
 
-  delete: (id) => 
+  delete: (id) =>
     apiRequest(`/products/${id}`, {
       method: 'DELETE',
     }),
 
-  getCategories: () => 
+  getCategories: () =>
     apiRequest('/products/categories'),
 
   // Admin methods
-  getStats: () => 
+  getStats: () =>
     apiRequest('/products/admin/stats'),
 
-  getAdminCategories: () => 
+  getAdminCategories: () =>
     apiRequest('/products/admin/categories'),
 
-  getInventoryAlerts: () => 
+  getInventoryAlerts: () =>
     apiRequest('/products/admin/inventory/alerts'),
 
-  getTopProducts: () => 
+  getTopProducts: () =>
     apiRequest('/products/admin/analytics/top'),
 };
 
 // Orders API
 export const ordersAPI = {
-  getMyOrders: () => 
+  getMyOrders: () =>
     apiRequest('/orders/my-orders'),
 
-  getById: (id) => 
+  getById: (id) =>
     apiRequest(`/orders/${id}`),
 
-  create: (orderData) => 
+  create: (orderData) =>
     apiRequest('/orders', {
       method: 'POST',
       body: JSON.stringify(orderData),
     }),
 
-  updateStatus: (id, status) => 
+  updateStatus: (id, status) =>
     apiRequest(`/orders/${id}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
@@ -178,16 +178,16 @@ export const ordersAPI = {
     return apiRequest(`/orders/admin/all${queryString ? `?${queryString}` : ''}`);
   },
 
-  getStats: () => 
+  getStats: () =>
     apiRequest('/orders/admin/stats'),
 
-  getAnalytics: () => 
+  getAnalytics: () =>
     apiRequest('/orders/admin/analytics'),
 
-  getSalesAnalytics: () => 
+  getSalesAnalytics: () =>
     apiRequest('/orders/admin/analytics/sales'),
 
-  getRevenueAnalytics: () => 
+  getRevenueAnalytics: () =>
     apiRequest('/orders/admin/analytics/revenue'),
 
   getRecent: (params = {}) => {
@@ -195,35 +195,35 @@ export const ordersAPI = {
     return apiRequest(`/orders/admin/recent${queryString ? `?${queryString}` : ''}`);
   },
 
-  exportReports: () => 
+  exportReports: () =>
     apiRequest('/orders/admin/reports/export'),
 };
 
 // Cart API
 export const cartAPI = {
-  addToCart: (productId, quantity = 1) => 
+  addToCart: (productId, quantity = 1) =>
     apiRequest('/auth/cart/add', {
       method: 'POST',
       body: JSON.stringify({ productId, quantity }),
     }),
 
-  removeFromCart: (productId) => 
+  removeFromCart: (productId) =>
     apiRequest(`/auth/cart/${productId}`, {
       method: 'DELETE',
     }),
 
-  updateQuantity: (productId, quantity) => 
+  updateQuantity: (productId, quantity) =>
     apiRequest(`/auth/cart/${productId}`, {
       method: 'PUT',
       body: JSON.stringify({ quantity }),
     }),
 
-  clearCart: () => 
+  clearCart: () =>
     apiRequest('/auth/cart', {
       method: 'DELETE',
     }),
 
-  getCart: () => 
+  getCart: () =>
     apiRequest('/auth/me').then(data => data.user.cart || []),
 };
 
@@ -235,7 +235,7 @@ export const tokenUtils = {
   isValid: () => {
     const token = localStorage.getItem('token');
     if (!token) return false;
-    
+
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.exp > Date.now() / 1000;
@@ -252,7 +252,7 @@ const api = {
   post: httpMethods.post,
   put: httpMethods.put,
   delete: httpMethods.delete,
-  
+
   // Specific API modules
   auth: authAPI,
   products: productsAPI,
